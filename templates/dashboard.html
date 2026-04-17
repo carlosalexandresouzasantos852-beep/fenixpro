@@ -1549,6 +1549,14 @@
 
     <!-- ===== CONFIG ===== -->
     <div class="page-section" id="page-config">
+    <input id="cfg-painel" placeholder="ID do canal painel">
+    <input id="cfg-categoria" placeholder="ID da categoria">
+    <input id="cfg-aceitos" placeholder="ID do canal aprovados">
+    <input id="cfg-recusados" placeholder="ID do canal recusados">
+    <input id="cfg-cargo" placeholder="ID do cargo">
+    <input id="cfg-tag" placeholder="TAG do servidor">
+
+    <button onclick="salvarConfig()">Salvar Configuração</button>
 
       <!-- SETUP BANNER -->
       <div style="background:linear-gradient(135deg,rgba(255,107,0,0.1),rgba(255,69,0,0.05));border:1px solid rgba(255,107,0,0.25);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
@@ -2010,12 +2018,15 @@ async function carregar() {
 carregar();
 </script>
 <script>
+let guildSelecionada = null;
+
 async function carregarUsuario() {
     const res = await fetch("/api/user");
     const user = await res.json();
 
     if (user.username) {
-        document.querySelector(".user-name").innerText = user.username;
+        const nome = document.querySelector(".user-name");
+        if (nome) nome.innerText = user.username;
     }
 }
 
@@ -2024,13 +2035,13 @@ async function carregarServidores() {
     const guilds = await res.json();
 
     const lista = document.querySelector(".server-list");
+    if (!lista) return;
 
     lista.innerHTML = "";
 
     guilds.forEach(g => {
         const el = document.createElement("div");
         el.className = "server-item";
-
         el.innerHTML = `
             <div class="srv-icon">🖥️</div>
             <div>
@@ -2039,8 +2050,71 @@ async function carregarServidores() {
             </div>
         `;
 
+        el.onclick = async () => {
+            guildSelecionada = g.id;
+
+            document.querySelectorAll(".server-item").forEach(item => {
+                item.classList.remove("active-server");
+            });
+            el.classList.add("active-server");
+
+            await carregarConfig(g.id);
+            showPage('config');
+        };
+
         lista.appendChild(el);
     });
+}
+
+async function carregarConfig(guildId) {
+    const res = await fetch(`/api/config/${guildId}`);
+    const data = await res.json();
+
+    const painel = document.getElementById("cfg-painel");
+    const categoria = document.getElementById("cfg-categoria");
+    const aceitos = document.getElementById("cfg-aceitos");
+    const recusados = document.getElementById("cfg-recusados");
+    const cargo = document.getElementById("cfg-cargo");
+    const tag = document.getElementById("cfg-tag");
+
+    if (painel) painel.value = data.painel || "";
+    if (categoria) categoria.value = data.categoria || "";
+    if (aceitos) aceitos.value = data.aceitos || "";
+    if (recusados) recusados.value = data.recusados || "";
+    if (cargo) cargo.value = data.cargo || "";
+    if (tag) tag.value = data.tag || "";
+}
+
+async function salvarConfig() {
+    if (!guildSelecionada) {
+        alert("Selecione um servidor primeiro.");
+        return;
+    }
+
+    const payload = {
+        painel: document.getElementById("cfg-painel")?.value || "",
+        categoria: document.getElementById("cfg-categoria")?.value || "",
+        aceitos: document.getElementById("cfg-aceitos")?.value || "",
+        recusados: document.getElementById("cfg-recusados")?.value || "",
+        cargo: document.getElementById("cfg-cargo")?.value || "",
+        tag: document.getElementById("cfg-tag")?.value || ""
+    };
+
+    const res = await fetch(`/api/config/${guildSelecionada}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const out = await res.json();
+
+    if (out.status === "ok") {
+        alert("Configuração salva com sucesso.");
+    } else {
+        alert("Erro ao salvar configuração.");
+    }
 }
 
 carregarUsuario();

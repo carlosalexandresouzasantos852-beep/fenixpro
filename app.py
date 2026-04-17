@@ -19,6 +19,31 @@ API_BASE = "https://discord.com/api"
 # ROTAS WEB
 # =========================
 
+CONFIG_FILE = "config.json"
+
+def load_json(file):
+    if not os.path.exists(file):
+        return {}
+    with open(file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_json(file, data):
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+@app.route("/api/config/<guild_id>", methods=["GET"])
+def get_config(guild_id):
+    config = load_json(CONFIG_FILE)
+    return jsonify(config.get(str(guild_id), {}))
+
+@app.route("/api/config/<guild_id>", methods=["POST"])
+def save_config(guild_id):
+    data = request.json
+    config = load_json(CONFIG_FILE)
+    config[str(guild_id)] = data
+    save_json(CONFIG_FILE, config)
+    return jsonify({"status": "ok"})
+
 @app.route("/")
 def home():
     if "user" in session:
