@@ -4,7 +4,7 @@ import os
 import json
 
 app = Flask(__name__)
-app.secret_key = os.getenv("kele_te_amo", "fenixx_secret")
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "fenixx_secret")
 
 # =========================
 # CONFIG DISCORD
