@@ -11,8 +11,11 @@ app.secret_key = os.getenv("kele_te_amo", "fenixx_secret")
 # =========================
 
 CLIENT_ID = "1494377772661870622"
-CLIENT_SECRET = os.getenv("lWJlkSNcFq3P6eC_4T-TpHD_X2WUOSjh")
+CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 REDIRECT_URI = "https://fenixpro-production.up.railway.app/callback"
+
+if not CLIENT_SECRET:
+    raise RuntimeError("DISCORD_CLIENT_SECRET não encontrado nas variáveis do Railway")
 
 API_BASE = "https://discord.com/api"
 
