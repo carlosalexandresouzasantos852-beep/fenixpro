@@ -2009,6 +2009,43 @@ async function carregar() {
 
 carregar();
 </script>
+<script>
+async function carregarUsuario() {
+    const res = await fetch("/api/user");
+    const user = await res.json();
+
+    if (user.username) {
+        document.querySelector(".user-name").innerText = user.username;
+    }
+}
+
+async function carregarServidores() {
+    const res = await fetch("/api/guilds");
+    const guilds = await res.json();
+
+    const lista = document.querySelector(".server-list");
+
+    lista.innerHTML = "";
+
+    guilds.forEach(g => {
+        const el = document.createElement("div");
+        el.className = "server-item";
+
+        el.innerHTML = `
+            <div class="srv-icon">🖥️</div>
+            <div>
+                <div class="srv-name">${g.name}</div>
+                <div class="srv-count">ID: ${g.id}</div>
+            </div>
+        `;
+
+        lista.appendChild(el);
+    });
+}
+
+carregarUsuario();
+carregarServidores();
+</script>
 
 <style>
 @keyframes toastIn {
