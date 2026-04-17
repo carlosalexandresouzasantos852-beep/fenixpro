@@ -4,15 +4,15 @@ import os
 import json
 
 app = Flask(__name__)
-app.secret_key = "fenixx_secret"
+app.secret_key = os.getenv("kele_te_amo", "fenixx_secret")
 
 # =========================
 # CONFIG DISCORD
 # =========================
 
 CLIENT_ID = "1494377772661870622"
-CLIENT_SECRET = "L3lK7VTP3BxnJhQcKgmh7WPk7Pm7iUA_"
-REDIRECT_URI = "https://fenixpro-production.up.railway.app"
+CLIENT_SECRET = os.getenv("lWJlkSNcFq3P6eC_4T-TpHD_X2WUOSjh")
+REDIRECT_URI = "https://fenixpro-production.up.railway.app/callback"
 
 API_BASE = "https://discord.com/api"
 
@@ -21,10 +21,10 @@ API_BASE = "https://discord.com/api"
 # =========================
 
 @app.route("/")
-def dashboard():
-    if "user" not in session:
-        return redirect("/login")
-    return render_template("dashboard.html", user=session["user"])
+def home():
+    if "user" in session:
+        return redirect("/painel")
+    return redirect("/login")
 
 
 @app.route("/painel")
@@ -34,6 +34,13 @@ def painel():
     return render_template("painel.html", user=session["user"])
 
 
+@app.route("/dashboard")
+def dashboard():
+    if "user" not in session:
+        return redirect("/login")
+    return render_template("dashboard.html", user=session["user"])
+
+
 # =========================
 # LOGIN DISCORD
 # =========================
@@ -41,13 +48,20 @@ def painel():
 @app.route("/login")
 def login():
     return redirect(
-        f"{API_BASE}/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=identify%20guilds"
+        f"{API_BASE}/oauth2/authorize"
+        f"?client_id={CLIENT_ID}"
+        f"&redirect_uri={REDIRECT_URI}"
+        f"&response_type=code"
+        f"&scope=identify%20guilds"
     )
 
 
 @app.route("/callback")
 def callback():
     code = request.args.get("code")
+
+    if not code:
+        return "❌ Código de autorização não recebido.", 400
 
     data = {
         "client_id": CLIENT_ID,
@@ -59,9 +73,17 @@ def callback():
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-    token = requests.post(f"{API_BASE}/oauth2/token", data=data, headers=headers).json()
+    token_response = requests.post(
+        f"{API_BASE}/oauth2/token",
+        data=data,
+        headers=headers
+    )
+    token = token_response.json()
 
     access_token = token.get("access_token")
+
+    if not access_token:
+        return f"❌ Erro ao obter token: {token}", 400
 
     user = requests.get(
         f"{API_BASE}/users/@me",
@@ -77,7 +99,7 @@ def callback():
     session["guilds"] = guilds
     session["token"] = access_token
 
-    return redirect("/")
+    return redirect("/painel")
 
 
 # =========================
@@ -99,7 +121,7 @@ def salvar_config():
     data = request.json
 
     with open("config.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
     return jsonify({"status": "ok"})
 
@@ -111,7 +133,7 @@ def salvar_config():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect("/login")
 
 
 # =========================
