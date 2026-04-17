@@ -12,7 +12,7 @@ app.secret_key = "fenixx_secret"
 
 CLIENT_ID = "1494377772661870622"
 CLIENT_SECRET = "L3lK7VTP3BxnJhQcKgmh7WPk7Pm7iUA_"
-REDIRECT_URI = "https://fenixpro-production.up.railway.app/callback"
+REDIRECT_URI = "https://fenixpro-production.up.railway.app"
 
 API_BASE = "https://discord.com/api"
 
