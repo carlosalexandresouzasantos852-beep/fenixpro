@@ -6,10 +6,6 @@ import json
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "fenixx_secret")
 
-# =========================
-# CONFIG DISCORD
-# =========================
-
 CLIENT_ID = "1494377772661870622"
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 REDIRECT_URI = "https://fenixpro-production.up.railway.app/callback"
@@ -93,13 +89,13 @@ def callback():
         headers={"Authorization": f"Bearer {access_token}"},
     ).json()
 
-    guilds = requests.get(
-        f"{API_BASE}/users/@me/guilds",
-        headers={"Authorization": f"Bearer {access_token}"},
-    ).json()
-
-    session["user"] = user
-    session["guilds"] = guilds
+    # ✅ SALVA SÓ O NECESSÁRIO
+    session["user"] = {
+        "id": user.get("id"),
+        "username": user.get("username"),
+        "avatar": user.get("avatar"),
+        "global_name": user.get("global_name"),
+    }
     session["token"] = access_token
 
     return redirect("/painel")
@@ -116,7 +112,23 @@ def api_user():
 
 @app.route("/api/guilds")
 def api_guilds():
-    return jsonify(session.get("guilds", []))
+    access_token = session.get("token")
+    if not access_token:
+        return jsonify([])
+
+    guilds = requests.get(
+        f"{API_BASE}/users/@me/guilds",
+        headers={"Authorization": f"Bearer {access_token}"},
+    ).json()
+
+    # filtra só owner/admin/manage guild
+    guilds_filtradas = []
+    for guild in guilds:
+        permissions = int(guild.get("permissions", 0))
+        if guild.get("owner", False) or (permissions & 0x8) == 0x8 or (permissions & 0x20) == 0x20:
+            guilds_filtradas.append(guild)
+
+    return jsonify(guilds_filtradas)
 
 
 @app.route("/api/config", methods=["POST"])
