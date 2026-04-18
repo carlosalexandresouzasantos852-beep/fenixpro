@@ -982,6 +982,7 @@ function renderServerList() {
 
 async function entrarServidor(guild) {
   activeGuild = guild;
+  
 
   const srvNavName = document.getElementById("srvNavName");
   const srvNavIcon = document.getElementById("srvNavIcon");
@@ -1038,23 +1039,35 @@ async function carregarConfigDiscord(guildId) {
 
     const canaisRes = await fetch(`/api/guild/${guildId}/channels`);
     const canais = await canaisRes.json();
+    console.log("Resposta channels:", canaisRes.status, canais);
 
     const cargosRes = await fetch(`/api/guild/${guildId}/roles`);
     const cargos = await cargosRes.json();
+    console.log("Resposta roles:", cargosRes.status, cargos);
 
-    console.log("CANAIS:", canais);
-    console.log("CARGOS:", cargos);
+    if (!canaisRes.ok) {
+      showToast("Erro ao carregar canais do servidor.", "red");
+      return;
+    }
+
+    if (!cargosRes.ok) {
+      showToast("Erro ao carregar cargos do servidor.", "red");
+      return;
+    }
 
     preencherSelect("cfg-painel", canais.text_channels || [], "#");
     preencherSelect("cfg-aceitos", canais.text_channels || [], "#");
     preencherSelect("cfg-recusados", canais.text_channels || [], "#");
-    preencherSelect("cfg-categoria", canais.categories || [], "");
+    preencherSelect("cfg-categoria", canais.categories || []);
     preencherSelect("cfg-cargo", Array.isArray(cargos) ? cargos : [], "@");
 
-    await carregarConfigSalva(guildId);
+    if (!(canais.text_channels || []).length) {
+      showToast("Nenhum canal de texto encontrado para este servidor.", "red");
+    }
+
   } catch (err) {
-    console.error("Erro ao carregar canais/cargos:", err);
-    showToast("❌ Erro ao carregar canais e cargos do servidor.", "red");
+    console.error("Erro ao carregar config:", err);
+    showToast("Falha ao buscar canais e cargos.", "red");
   }
 }
 
