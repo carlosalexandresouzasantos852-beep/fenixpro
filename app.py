@@ -218,6 +218,74 @@ def save_config(guild_id):
 
     return jsonify({"status": "ok"})
 
+@app.route("/api/guild/<guild_id>/channels")
+def api_guild_channels(guild_id):
+    if "user" not in session:
+        return jsonify({"error": "Não autenticado"}), 401
+
+    if not BOT_TOKEN:
+        return jsonify({"error": "BOT_TOKEN não configurado"}), 500
+
+    resp = requests.get(
+        f"{API_BASE}/guilds/{guild_id}/channels",
+        headers={
+            "Authorization": f"Bot {BOT_TOKEN}"
+        }
+    )
+
+    if resp.status_code != 200:
+        return jsonify({"error": resp.json()}), resp.status_code
+
+    channels = resp.json()
+
+    text_channels = []
+    categories = []
+
+    for ch in channels:
+        if ch["type"] == 0:  # texto
+            text_channels.append({
+                "id": ch["id"],
+                "name": ch["name"]
+            })
+
+        elif ch["type"] == 4:  # categoria
+            categories.append({
+                "id": ch["id"],
+                "name": ch["name"]
+            })
+
+    return jsonify({
+        "text_channels": text_channels,
+        "categories": categories
+    })
+
+@app.route("/api/guild/<guild_id>/roles")
+def api_guild_roles(guild_id):
+    if "user" not in session:
+        return jsonify({"error": "Não autenticado"}), 401
+
+    if not BOT_TOKEN:
+        return jsonify({"error": "BOT_TOKEN não configurado"}), 500
+
+    resp = requests.get(
+        f"{API_BASE}/guilds/{guild_id}/roles",
+        headers={
+            "Authorization": f"Bot {BOT_TOKEN}"
+        }
+    )
+
+    if resp.status_code != 200:
+        return jsonify({"error": resp.json()}), resp.status_code
+
+    roles = resp.json()
+
+    roles_formatados = [
+        {"id": r["id"], "name": r["name"]}
+        for r in roles
+        if r["name"] != "@everyone"
+    ]
+
+    return jsonify(roles_formatados)
 
 # =========================
 # RUN

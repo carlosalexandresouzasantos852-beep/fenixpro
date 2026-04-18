@@ -839,22 +839,29 @@ function voltarPainel() {
 // ============================================================
 // CARREGAR / SALVAR CONFIG
 // ============================================================
-async function carregarConfig(guildId) {
-  try {
-    const res = await fetch(`/api/config/${guildId}`);
-    const data = await res.json();
+async function carregarTudo(guildId) {
+    const canais = await fetch(`/api/guild/${guildId}/channels`).then(r => r.json());
+    const cargos = await fetch(`/api/guild/${guildId}/roles`).then(r => r.json());
 
-    setVal('cfg-painel', data.painel);
-    setVal('cfg-aceitos', data.aceitos);
-    setVal('cfg-recusados', data.recusados);
-    setVal('cfg-categoria', data.categoria);
-    setVal('cfg-cargo', data.cargo);
-    setVal('cfg-tag', data.tag);
+    preencher("cfg-painel", canais.text_channels);
+    preencher("cfg-aceitos", canais.text_channels);
+    preencher("cfg-recusados", canais.text_channels);
+    preencher("cfg-categoria", canais.categories);
+    preencher("cfg-cargo", cargos);
+}
 
-    if (data.tag) updateTagPreview(data.tag);
-  } catch(e) {
-    console.error('Erro ao carregar config:', e);
-  }
+function preencher(id, lista) {
+    const select = document.getElementById(id);
+    if (!select) return;
+
+    select.innerHTML = `<option value="">Selecione...</option>`;
+
+    lista.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.id;
+        opt.textContent = item.name;
+        select.appendChild(opt);
+    });
 }
 
 async function salvarConfig() {
