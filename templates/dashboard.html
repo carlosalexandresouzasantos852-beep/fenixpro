@@ -1200,5 +1200,66 @@ async function carregarConfigDiscord(guildId) {
     }
 }
 </script>
+<script>
+async function carregarConfigGuild(guildId) {
+  try {
+    // 🔥 Buscar canais + categorias
+    const res = await fetch(`/api/guild/${guildId}/channels`);
+    const data = await res.json();
+
+    const canais = data.text_channels || [];
+    const categorias = data.categories || [];
+
+    // 🔥 Buscar cargos
+    const rolesRes = await fetch(`/api/guild/${guildId}/roles`);
+    const roles = await rolesRes.json();
+
+    // =========================
+    // LIMPAR SELECTS
+    // =========================
+    const painel = document.getElementById("cfg-painel");
+    const aceitos = document.getElementById("cfg-aceitos");
+    const recusados = document.getElementById("cfg-recusados");
+    const categoria = document.getElementById("cfg-categoria");
+    const cargo = document.getElementById("cfg-cargo");
+
+    painel.innerHTML = `<option value="">Selecione...</option>`;
+    aceitos.innerHTML = `<option value="">Selecione...</option>`;
+    recusados.innerHTML = `<option value="">Selecione...</option>`;
+    categoria.innerHTML = `<option value="">Selecione...</option>`;
+    cargo.innerHTML = `<option value="">Selecione...</option>`;
+
+    // =========================
+    // CANAIS
+    // =========================
+    canais.forEach(c => {
+      const opt1 = new Option("#" + c.name, c.id);
+      const opt2 = new Option("#" + c.name, c.id);
+      const opt3 = new Option("#" + c.name, c.id);
+
+      painel.appendChild(opt1);
+      aceitos.appendChild(opt2);
+      recusados.appendChild(opt3);
+    });
+
+    // =========================
+    // CATEGORIAS
+    // =========================
+    categorias.forEach(cat => {
+      categoria.appendChild(new Option(cat.name, cat.id));
+    });
+
+    // =========================
+    // CARGOS
+    // =========================
+    roles.forEach(r => {
+      cargo.appendChild(new Option(r.name, r.id));
+    });
+
+  } catch (err) {
+    console.error("Erro ao carregar config:", err);
+  }
+}
+</script>
 </body>
 </html>
