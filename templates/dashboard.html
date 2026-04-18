@@ -527,68 +527,79 @@ select.form-input option{background:var(--dark-3);}
       </div>
 
        <!-- CONFIG WL -->
-      <div class="page-section" id="page-configwl">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
-          <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-          <div style="flex:1"></div>
-          <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar</button>
-        </div>
- 
-        <div style="background:linear-gradient(135deg,rgba(255,107,0,0.09),rgba(255,69,0,0.04));border:1px solid rgba(255,107,0,0.22);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:28px;">⚙️</div>
-          <div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;">Configuração via Discord — <span style="color:var(--fire-1)">/config_wl</span></div>
-            <div style="font-size:12.5px;color:var(--text-dim);">Use <code style="background:var(--dark-3);padding:1px 5px;border-radius:4px;color:var(--fire-3);font-family:'JetBrains Mono',monospace">/config_wl</code> no Discord ou configure tudo aqui. As alterações são aplicadas automaticamente ao bot.</div>
-          </div>
-        </div>
- 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
-          <div class="card">
-            <div class="card-header"><div class="card-title">📢 Canais do Servidor</div></div>
-            <div class="card-body">
-              <div class="form-group"><label class="form-label">Canal do Painel de Liberação</label>
-                <select class="form-input" id="cfg-painel"><option>#liberacao</option><option>#whitelist</option><option>#candidaturas</option></select>
-                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">O bot fixa o painel de liberação neste canal.</div>
-              </div>
-              <div class="form-group"><label class="form-label">Canal de Aprovados</label>
-                <select class="form-input" id="cfg-aceitos"><option>#wl-aprovados</option><option>#aprovados</option><option>#liberados</option></select>
-              </div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Canal de Reprovados</label>
-                <select class="form-input" id="cfg-recusados"><option>#wl-reprovados</option><option>#reprovados</option><option>#negados</option></select>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">🗂️ Categoria & Cargos</div></div>
-            <div class="card-body">
-              <div class="form-group"><label class="form-label">Categoria dos Tickets</label>
-                <select class="form-input" id="cfg-categoria"><option>LIBERAÇÕES</option><option>WHITELIST</option><option>CANDIDATURAS</option></select>
-                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura vira um ticket nesta categoria.</div>
-              </div>
-              <div class="form-group"><label class="form-label">Cargo Concedido na Aprovação</label>
-                <select class="form-input" id="cfg-cargo"><option>@Whitelist</option><option>@Liberado</option><option>@Membro</option><option>@Jogador</option></select>
-              </div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Tag / Apelido no Discord</label>
-                <input class="form-input" type="text" id="cfg-tag" placeholder="Ex: NomePersonagem" oninput="updateTagPreview(this.value)">
-                <div style="margin-top:9px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px;">
-                  <div style="font-size:9.5px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Preview</div>
-                  <div style="font-size:13.5px;font-weight:700;color:#fff" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">NomePersonagem</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
+<div class="page-section" id="page-configwl">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+    <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
+    <div style="flex:1"></div>
+    <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar</button>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(255,107,0,0.09),rgba(255,69,0,0.04));border:1px solid rgba(255,107,0,0.22);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;">
+    <div style="font-size:28px;">⚙️</div>
+    <div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;">Configuração via Discord — <span style="color:var(--fire-1)">/config_wl</span></div>
+      <div style="font-size:12.5px;color:var(--text-dim);">Use <code style="background:var(--dark-3);padding:1px 5px;border-radius:4px;color:var(--fire-3);font-family:'JetBrains Mono',monospace">/config_wl</code> no Discord ou configure tudo aqui. As alterações são aplicadas automaticamente ao bot.</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📢 Canais do Servidor</div></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">Canal do Painel de Liberação</label>
+          <select class="form-input" id="cfg-painel">
+            <option value="">Selecione um canal...</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">O bot fixa o painel de liberação neste canal.</div>
         </div>
 
-        <div class="card">
-          <div class="card-header"><div class="card-title">🔐 Segurança & Limites</div></div>
-          <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Cooldown</label><select class="form-input" id="cfg-cooldown"><option>30 minutos</option><option selected>1 hora</option><option>3 horas</option><option>24 horas</option></select></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Máx. tentativas</label><input class="form-input" type="number" value="3" id="cfg-max-tentativas"></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Anti-Flood</label><select class="form-input" id="cfg-antiflood"><option selected>Ativado</option><option>Desativado</option></select></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Idade mín. conta</label><select class="form-input" id="cfg-idade"><option selected>7+ dias</option><option>30+ dias</option><option>Sem verificação</option></select></div>
+        <div class="form-group">
+          <label class="form-label">Canal de Aprovados</label>
+          <select class="form-input" id="cfg-aceitos">
+            <option value="">Selecione um canal...</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Canal de Reprovados</label>
+          <select class="form-input" id="cfg-recusados">
+            <option value="">Selecione um canal...</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🗂️ Categoria & Cargos</div></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">Categoria dos Tickets</label>
+          <select class="form-input" id="cfg-categoria">
+            <option value="">Selecione uma categoria...</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura vira um ticket nesta categoria.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cargo Concedido na Aprovação</label>
+          <select class="form-input" id="cfg-cargo">
+            <option value="">Selecione um cargo...</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Tag / Apelido no Discord</label>
+          <input class="form-input" type="text" id="cfg-tag" placeholder="Ex: NomePersonagem" oninput="updateTagPreview(this.value)">
+          <div style="margin-top:9px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px;">
+            <div style="font-size:9.5px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Preview</div>
+            <div style="font-size:13.5px;font-weight:700;color:#fff" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">NomePersonagem</span></div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
     </div><!-- /serverPages -->
   </div><!-- /content -->
@@ -1052,6 +1063,102 @@ document.addEventListener('click', e => {
 // ============================================================
 init();
 showUserPage('home');
+</script>
+<script>
+let guildSelecionada = null;
+
+function preencherSelect(id, lista) {
+    const select = document.getElementById(id);
+    if (!select) return;
+
+    select.innerHTML = `<option value="">Selecione...</option>`;
+
+    lista.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        select.appendChild(option);
+    });
+}
+
+async function carregarCanaisECargos(guildId) {
+    try {
+        const canaisRes = await fetch(`/api/guild/${guildId}/channels`);
+        const canaisData = await canaisRes.json();
+
+        const cargosRes = await fetch(`/api/guild/${guildId}/roles`);
+        const cargosData = await cargosRes.json();
+
+        console.log("CANAIS:", canaisData);
+        console.log("CARGOS:", cargosData);
+
+        preencherSelect("cfg-painel", canaisData.text_channels || []);
+        preencherSelect("cfg-aceitos", canaisData.text_channels || []);
+        preencherSelect("cfg-recusados", canaisData.text_channels || []);
+        preencherSelect("cfg-categoria", canaisData.categories || []);
+        preencherSelect("cfg-cargo", cargosData || []);
+    } catch (err) {
+        console.error("Erro ao carregar canais/cargos:", err);
+    }
+}
+
+async function carregarConfig(guildId) {
+    try {
+        const res = await fetch(`/api/config/${guildId}`);
+        const data = await res.json();
+
+        if (data.painel) document.getElementById("cfg-painel").value = data.painel;
+        if (data.aceitos) document.getElementById("cfg-aceitos").value = data.aceitos;
+        if (data.recusados) document.getElementById("cfg-recusados").value = data.recusados;
+        if (data.categoria) document.getElementById("cfg-categoria").value = data.categoria;
+        if (data.cargo) document.getElementById("cfg-cargo").value = data.cargo;
+        if (data.tag) {
+            document.getElementById("cfg-tag").value = data.tag;
+            updateTagPreview(data.tag);
+        }
+    } catch (err) {
+        console.error("Erro ao carregar config:", err);
+    }
+}
+
+async function salvarConfig() {
+    if (!guildSelecionada) {
+        alert("Selecione um servidor primeiro.");
+        return;
+    }
+
+    const payload = {
+        painel: document.getElementById("cfg-painel").value,
+        aceitos: document.getElementById("cfg-aceitos").value,
+        recusados: document.getElementById("cfg-recusados").value,
+        categoria: document.getElementById("cfg-categoria").value,
+        cargo: document.getElementById("cfg-cargo").value,
+        tag: document.getElementById("cfg-tag").value
+    };
+
+    const res = await fetch(`/api/config/${guildSelecionada}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const out = await res.json();
+
+    if (out.status === "ok") {
+        alert("Configuração salva com sucesso.");
+    } else {
+        alert("Erro ao salvar configuração.");
+    }
+}
+
+function updateTagPreview(valor) {
+    const preview = document.getElementById("tagPreview");
+    if (!preview) return;
+
+    preview.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${valor || "NomePersonagem"}</span>`;
+}
 </script>
 </body>
 </html>
