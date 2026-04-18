@@ -1160,5 +1160,45 @@ function updateTagPreview(valor) {
     preview.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${valor || "NomePersonagem"}</span>`;
 }
 </script>
+<script>
+async function preencherSelect(id, items) {
+    const select = document.getElementById(id);
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Selecione...</option>';
+
+    items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        select.appendChild(option);
+    });
+}
+
+async function carregarConfigDiscord(guildId) {
+    const canaisRes = await fetch(`/api/guild/${guildId}/channels`);
+    const canais = await canaisRes.json();
+
+    const cargosRes = await fetch(`/api/guild/${guildId}/roles`);
+    const cargos = await cargosRes.json();
+
+    console.log("channels:", canais);
+    console.log("roles:", cargos);
+
+    if (canais.text_channels) {
+        preencherSelect("cfg-painel", canais.text_channels);
+        preencherSelect("cfg-aceitos", canais.text_channels);
+        preencherSelect("cfg-recusados", canais.text_channels);
+    }
+
+    if (canais.categories) {
+        preencherSelect("cfg-categoria", canais.categories);
+    }
+
+    if (Array.isArray(cargos)) {
+        preencherSelect("cfg-cargo", cargos);
+    }
+}
+</script>
 </body>
 </html>
