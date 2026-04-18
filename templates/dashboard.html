@@ -20,7 +20,6 @@
   --border-soft: rgba(255,255,255,0.06);
   --text: #e2e2f0;
   --text-dim: #7070a0;
-  --text-bright: #ffffff;
   --green: #00e57a;
   --red: #ff4466;
   --blue: #4488ff;
@@ -45,14 +44,15 @@ body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;ove
 .nav-link.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:58%;background:var(--fire-1);border-radius:0 3px 3px 0;box-shadow:0 0 8px var(--fire-1);}
 .nav-icon{font-size:16px;min-width:19px;text-align:center;}
 .nav-badge{margin-left:auto;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;background:rgba(255,107,0,0.2);color:var(--fire-1);}
-.nav-badge.green{background:rgba(0,229,122,0.15);color:var(--green);}
 .nav-badge.red{background:rgba(255,68,102,0.15);color:var(--red);}
 .sidebar-user{margin:8px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card);display:flex;align-items:center;gap:10px;}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
+.user-avatar-wrap{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;overflow:hidden;}
+.user-avatar-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 .user-name{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.2;}
 .user-role{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire-1);}
-.user-logout{margin-left:auto;font-size:15px;cursor:pointer;color:var(--text-dim);transition:color .2s;background:none;border:none;padding:3px;}
+.user-logout{margin-left:auto;font-size:15px;cursor:pointer;color:var(--text-dim);transition:color .2s;background:none;border:none;padding:3px;text-decoration:none;}
 .user-logout:hover{color:var(--red);}
+.sep{height:1px;background:var(--border-soft);margin:6px 8px;}
 
 /* MAIN */
 .main{margin-left:var(--sidebar-width);flex:1;display:flex;flex-direction:column;min-height:100vh;}
@@ -65,9 +65,7 @@ body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;ove
 .topbar-actions{display:flex;align-items:center;gap:9px;}
 .icon-btn{width:36px;height:36px;border-radius:9px;background:var(--card-2);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;position:relative;color:var(--text-dim);}
 .icon-btn:hover{border-color:var(--border);color:var(--text);background:var(--card);}
-.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--fire-1);border:2px solid var(--dark);box-shadow:0 0 5px var(--fire-1);}
-.server-selector{display:flex;align-items:center;gap:7px;padding:7px 12px;background:var(--card-2);border:1px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text);}
-.server-selector:hover{border-color:var(--fire-1);}
+.server-chip{display:flex;align-items:center;gap:7px;padding:7px 12px;background:var(--card-2);border:1px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);}
 .server-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);}
 
 /* CONTENT */
@@ -75,34 +73,24 @@ body{background:var(--dark);color:var(--text);font-family:'Exo 2',sans-serif;ove
 .page-section{display:none;}
 .page-section.active{display:block;}
 
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-.stat-card{background:var(--card);border:1px solid var(--border-soft);border-radius:15px;padding:20px;transition:all .25s;position:relative;overflow:hidden;}
-.stat-card:hover{border-color:var(--border);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3);}
-.stat-label-top{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
-.stat-big{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;line-height:1;margin-bottom:7px;}
-.stat-trend{font-size:11.5px;display:flex;align-items:center;gap:3px;}
-.trend-up{color:var(--green);}
-.trend-down{color:var(--red);}
-
-/* GRID */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
-.grid-3-1{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:22px;}
-
-/* CARD */
-.card{background:var(--card);border:1px solid var(--border-soft);border-radius:15px;overflow:hidden;}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border-soft);border-radius:15px;overflow:hidden;margin-bottom:18px;}
 .card-header{padding:16px 20px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between;}
 .card-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.8px;display:flex;align-items:center;gap:7px;}
-.card-action{font-size:12px;color:var(--fire-1);cursor:pointer;font-weight:600;letter-spacing:.8px;text-decoration:none;}
 .card-body{padding:18px 20px;}
 
-/* CHART */
-.chart-area{height:110px;display:flex;align-items:flex-end;gap:5px;padding:8px 0;}
-.chart-bar{flex:1;border-radius:3px 3px 0 0;background:rgba(255,107,0,0.2);transition:all .3s;cursor:pointer;}
-.chart-bar:hover{background:rgba(255,107,0,0.45);}
-.chart-bar.peak{background:linear-gradient(180deg,var(--fire-3),var(--fire-1));}
-.chart-labels{display:flex;gap:5px;margin-top:7px;}
-.chart-lbl{flex:1;text-align:center;font-size:10px;color:var(--text-dim);}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--card);border:1px solid var(--border-soft);border-radius:15px;padding:20px;transition:all .25s;}
+.stat-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.stat-label-top{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.stat-big{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;line-height:1;margin-bottom:7px;}
+.stat-trend{font-size:11.5px;color:var(--text-dim);}
+.trend-up{color:var(--green);}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+.grid-3-1{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:22px;}
 
 /* TABLE */
 .table-wrap{overflow-x:auto;}
@@ -112,7 +100,8 @@ tbody tr{border-bottom:1px solid var(--border-soft);transition:background .15s;}
 tbody tr:hover{background:rgba(255,107,0,0.04);}
 tbody td{padding:13px 15px;font-size:13px;}
 .td-user{display:flex;align-items:center;gap:9px;}
-.td-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.td-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+.td-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 .td-name{font-weight:600;font-size:13px;line-height:1.2;}
 .td-id{font-size:10.5px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
 
@@ -130,6 +119,8 @@ tbody td{padding:13px 15px;font-size:13px;}
 .act-btn:hover{border-color:var(--fire-1);background:rgba(255,107,0,0.1);}
 .act-btn.approve:hover{border-color:var(--green);background:rgba(0,229,122,0.1);}
 .act-btn.reject:hover{border-color:var(--red);background:rgba(255,68,102,0.1);}
+.tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--dark-3);border:1px solid var(--border);border-radius:7px;padding:5px 9px;font-size:10.5px;white-space:nowrap;color:var(--text);pointer-events:none;opacity:0;transition:opacity .2s;z-index:100;}
+.act-btn:hover .tooltip{opacity:1;}
 
 /* ACTIVITY */
 .activity-list{display:flex;flex-direction:column;gap:11px;}
@@ -138,48 +129,52 @@ tbody td{padding:13px 15px;font-size:13px;}
 .act-msg{font-size:12.5px;color:var(--text);line-height:1.4;}
 .act-time{font-size:10.5px;color:var(--text-dim);margin-top:2px;font-family:'JetBrains Mono',monospace;}
 
-/* SERVER LIST */
-.server-list{display:flex;flex-direction:column;gap:9px;}
-.server-item{display:flex;align-items:center;gap:11px;padding:12px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:11px;cursor:pointer;transition:all .2s;}
-.server-item:hover{border-color:var(--border);}
-.server-item.active-server{border-color:rgba(255,107,0,0.35);background:rgba(255,107,0,0.07);}
-.srv-icon{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;overflow:hidden;}
-.srv-icon img{width:100%;height:100%;object-fit:cover;border-radius:11px;}
-.srv-name{font-size:13px;font-weight:700;line-height:1.2;}
-.srv-count{font-size:11px;color:var(--text-dim);}
-.srv-status{margin-left:auto;font-size:9.5px;padding:3px 7px;border-radius:100px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
-.srv-status.online{background:rgba(0,229,122,0.12);color:var(--green);}
-.srv-status.offline{background:rgba(255,68,102,0.1);color:var(--red);}
-.srv-btn{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.8px;cursor:pointer;transition:all .2s;border:none;white-space:nowrap;}
-.srv-btn.manage{background:rgba(255,107,0,0.15);color:var(--fire-1);border:1px solid rgba(255,107,0,0.3);}
-.srv-btn.manage:hover{background:rgba(255,107,0,0.25);}
-.srv-btn.add{background:rgba(255,255,255,0.06);color:var(--text-dim);border:1px solid var(--border-soft);}
-.srv-btn.add:hover{border-color:var(--fire-1);color:var(--fire-1);}
+/* CHART */
+.chart-area{height:110px;display:flex;align-items:flex-end;gap:5px;padding:8px 0;}
+.chart-bar{flex:1;border-radius:3px 3px 0 0;background:rgba(255,107,0,0.2);transition:all .3s;cursor:pointer;}
+.chart-bar:hover{background:rgba(255,107,0,0.45);}
+.chart-bar.peak{background:linear-gradient(180deg,var(--fire-3),var(--fire-1));}
+.chart-labels{display:flex;gap:5px;margin-top:7px;}
+.chart-lbl{flex:1;text-align:center;font-size:10px;color:var(--text-dim);}
 
 /* MINI STATS */
-.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
 .mini-stat{background:var(--dark-3);border:1px solid var(--border-soft);border-radius:11px;padding:13px;text-align:center;}
 .mini-stat-num{font-family:'Rajdhani',sans-serif;font-size:25px;font-weight:700;line-height:1;margin-bottom:3px;}
 .mini-stat-label{font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);}
 
-/* FILTER BAR */
+/* SERVER LIST */
+.server-list{display:flex;flex-direction:column;gap:10px;}
+.server-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;cursor:pointer;transition:all .2s;}
+.server-item:hover{border-color:var(--border);}
+.srv-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;}
+.srv-icon img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
+.srv-name{font-size:13.5px;font-weight:700;line-height:1.2;}
+.srv-count{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.srv-status{font-size:9.5px;padding:3px 8px;border-radius:100px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
+.srv-status.online{background:rgba(0,229,122,0.12);color:var(--green);}
+.srv-status.no-bot{background:rgba(255,107,0,0.1);color:var(--fire-1);}
+.srv-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.8px;cursor:pointer;transition:all .2s;border:none;white-space:nowrap;}
+.srv-btn.manage{background:rgba(255,107,0,0.15);color:var(--fire-1);border:1px solid rgba(255,107,0,0.3);}
+.srv-btn.manage:hover{background:rgba(255,107,0,0.25);}
+.srv-btn.add-bot{background:rgba(0,229,122,0.1);color:var(--green);border:1px solid rgba(0,229,122,0.25);}
+.srv-btn.add-bot:hover{background:rgba(0,229,122,0.2);}
+
+/* FILTER */
 .filter-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
-.filter-btn{padding:6px 15px;border-radius:100px;border:1px solid var(--border-soft);background:transparent;color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.4px;font-family:'Exo 2',sans-serif;}
+.filter-btn{padding:6px 15px;border-radius:100px;border:1px solid var(--border-soft);background:transparent;color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Exo 2',sans-serif;}
 .filter-btn:hover,.filter-btn.active-filter{border-color:var(--fire-1);color:var(--fire-1);background:rgba(255,107,0,0.08);}
 .filter-spacer{flex:1;}
+
+/* BUTTONS */
 .btn-add{padding:8px 18px;border-radius:9px;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:5px;box-shadow:0 4px 14px rgba(255,107,0,0.28);transition:all .2s;}
 .btn-add:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,0,0.42);}
 .btn-ghost{padding:8px 20px;border-radius:9px;background:transparent;border:1px solid var(--border-soft);color:var(--text-dim);font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .btn-ghost:hover{border-color:var(--border);color:var(--text);}
+.back-btn{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:9px;background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.2);color:var(--fire-1);font-size:12px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.8px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.back-btn:hover{background:rgba(255,107,0,0.18);}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;}
-.modal-overlay.show{display:flex;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;width:460px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:modalIn .22s ease;}
-@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
-.modal-close{background:none;border:none;font-size:19px;cursor:pointer;color:var(--text-dim);transition:color .2s;padding:3px;}
-.modal-close:hover{color:var(--red);}
+/* FORM */
 .form-group{margin-bottom:16px;}
 .form-label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px;font-weight:700;}
 .form-input{width:100%;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--text);font-family:'Exo 2',sans-serif;outline:none;transition:border-color .2s;}
@@ -188,58 +183,58 @@ tbody td{padding:13px 15px;font-size:13px;}
 select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237070a0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;background-color:var(--dark-3);}
 select.form-input option{background:var(--dark-3);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;width:480px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:modalIn .22s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:none;border:none;font-size:19px;cursor:pointer;color:var(--text-dim);transition:color .2s;padding:3px;}
+.modal-close:hover{color:var(--red);}
 .modal-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:22px;}
 
-/* NOTIF PANEL */
-.notif-panel{position:fixed;top:62px;right:0;width:310px;background:var(--card);border-left:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 0 0 15px;box-shadow:-10px 10px 38px rgba(0,0,0,0.4);z-index:100;display:none;max-height:380px;overflow-y:auto;}
+/* NOTIF */
+.notif-panel{position:fixed;top:62px;right:0;width:310px;background:var(--card);border-left:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 0 0 15px;box-shadow:-8px 10px 36px rgba(0,0,0,0.4);z-index:100;display:none;max-height:380px;overflow-y:auto;}
 .notif-panel.show{display:block;}
 .notif-header{padding:13px 16px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;border-bottom:1px solid var(--border-soft);}
 .notif-item{padding:12px 16px;border-bottom:1px solid var(--border-soft);display:flex;gap:11px;cursor:pointer;transition:background .15s;}
 .notif-item:hover{background:rgba(255,107,0,0.05);}
-.notif-icon{font-size:18px;}
-.notif-text{font-size:12.5px;line-height:1.4;}
 .notif-time{font-size:10.5px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:2px;}
 
-/* TOOLTIP */
-.act-btn{position:relative;}
-.tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--dark-3);border:1px solid var(--border);border-radius:7px;padding:5px 9px;font-size:10.5px;white-space:nowrap;color:var(--text);pointer-events:none;opacity:0;transition:opacity .2s;z-index:100;}
-.act-btn:hover .tooltip{opacity:1;}
-
-/* QUESTION ITEMS */
-.questions-list{display:flex;flex-direction:column;gap:11px;}
-.question-item{background:var(--dark-3);border:1px solid var(--border-soft);border-radius:11px;padding:14px 16px;display:flex;align-items:flex-start;gap:13px;transition:border-color .2s;}
-.question-item:hover{border-color:var(--border);}
-.q-num{width:26px;height:26px;border-radius:7px;background:rgba(255,107,0,0.15);border:1px solid rgba(255,107,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--fire-1);flex-shrink:0;}
-.q-text{font-size:13px;flex:1;line-height:1.5;}
-.q-type{font-size:9.5px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
-
-/* EMBED */
-.embed-preview-box{background:#36393f;border-radius:8px;padding:15px;border-left:4px solid var(--fire-1);}
-
-/* LOJA */
-.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
-.shop-card{background:var(--card);border:1px solid var(--border-soft);border-radius:14px;overflow:hidden;transition:all .25s;}
-.shop-card:hover{border-color:var(--border);transform:translateY(-2px);}
-.shop-img{height:120px;background:linear-gradient(135deg,rgba(255,107,0,0.2),rgba(255,69,0,0.1));display:flex;align-items:center;justify-content:center;font-size:40px;}
-.shop-info{padding:14px;}
-.shop-name{font-weight:700;font-size:13.5px;margin-bottom:4px;}
-.shop-desc{font-size:11.5px;color:var(--text-dim);margin-bottom:10px;line-height:1.4;}
-.shop-price{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--fire-3);}
-.shop-btn{width:100%;margin-top:10px;padding:7px;border-radius:8px;background:rgba(255,107,0,0.15);border:1px solid rgba(255,107,0,0.25);color:var(--fire-1);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;}
-.shop-btn:hover{background:rgba(255,107,0,0.25);}
-
-/* SETTINGS LIST */
-.settings-group{margin-bottom:22px;}
-.settings-group-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--border-soft);}
-.setting-item{display:flex;align-items:center;padding:13px 16px;border:1px solid var(--border-soft);border-radius:11px;margin-bottom:8px;background:var(--dark-3);gap:13px;transition:border-color .2s;}
-.setting-item:hover{border-color:var(--border);}
-.setting-icon{font-size:19px;flex-shrink:0;}
-.setting-label{font-size:13px;font-weight:600;flex:1;}
-.setting-desc{font-size:11px;color:var(--text-dim);margin-top:2px;}
+/* TOGGLE */
 .toggle{width:44px;height:24px;border-radius:100px;background:var(--dark-2);border:1px solid var(--border-soft);cursor:pointer;position:relative;transition:all .25s;flex-shrink:0;}
 .toggle.on{background:rgba(255,107,0,0.3);border-color:var(--fire-1);}
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text-dim);transition:all .25s;}
 .toggle.on::after{left:23px;background:var(--fire-1);}
+.setting-item{display:flex;align-items:center;padding:13px 16px;border:1px solid var(--border-soft);border-radius:11px;margin-bottom:8px;background:var(--dark-3);gap:13px;}
+.setting-item:hover{border-color:var(--border);}
+.setting-icon{font-size:19px;flex-shrink:0;}
+.settings-group-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:20px;font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--border-soft);}
+
+/* COMMAND */
+.command-item{display:flex;align-items:center;gap:13px;padding:12px 16px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:11px;margin-bottom:8px;}
+.cmd-tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fire-3);background:rgba(255,179,0,0.08);padding:3px 9px;border-radius:5px;border:1px solid rgba(255,179,0,0.15);white-space:nowrap;}
+.cmd-desc{font-size:12.5px;color:var(--text-dim);flex:1;}
+
+/* PERM CHECK */
+.perm-check{width:20px;height:20px;border-radius:5px;border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;margin:auto;}
+.perm-check.on{background:rgba(0,229,122,0.15);border-color:var(--green);color:var(--green);}
+.perm-check.off{background:rgba(255,68,102,0.08);border-color:rgba(255,68,102,0.3);}
+
+/* LOADING */
+.loading-state{display:flex;align-items:center;justify-content:center;padding:40px;gap:12px;color:var(--text-dim);font-size:13px;}
+.spinner{width:20px;height:20px;border:2px solid var(--border-soft);border-top-color:var(--fire-1);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-dim);}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px;opacity:.5;}
+.empty-state p{font-size:13px;line-height:1.6;}
+
+/* WL TABS */
+.wl-tab-bar{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border-soft);}
+.wl-tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.wl-tab.active{color:var(--fire-1);border-bottom-color:var(--fire-1);}
+.wl-tab:hover{color:var(--text);}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px;}
@@ -247,37 +242,15 @@ select.form-input option{background:var(--dark-3);}
 ::-webkit-scrollbar-thumb{background:rgba(255,107,0,0.22);border-radius:10px;}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,107,0,0.42);}
 
-/* BACK BTN */
-.back-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:9px;background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.2);color:var(--fire-1);font-size:12px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
-.back-btn:hover{background:rgba(255,107,0,0.18);}
-
-/* SEPARATOR */
-.sep{height:1px;background:var(--border-soft);margin:6px 8px;}
-
-/* PERMISSIONS TABLE */
-.perm-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border-soft);}
-.perm-row:last-child{border-bottom:none;}
-.perm-name{flex:1;font-size:13px;font-weight:600;}
-.perm-check{width:20px;height:20px;border-radius:5px;border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;}
-.perm-check.on{background:rgba(0,229,122,0.15);border-color:var(--green);color:var(--green);}
-.perm-check.off{background:rgba(255,68,102,0.1);border-color:var(--red);}
-
-/* COMANDOS */
-.command-item{display:flex;align-items:center;gap:13px;padding:12px 16px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:11px;margin-bottom:8px;}
-.cmd-tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fire-3);background:rgba(255,179,0,0.08);padding:3px 9px;border-radius:5px;border:1px solid rgba(255,179,0,0.15);white-space:nowrap;}
-.cmd-desc{font-size:12.5px;color:var(--text-dim);flex:1;}
-
 @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}.grid-3-1{grid-template-columns:1fr;}}
-@media(max-width:800px){.sidebar{transform:translateX(-100%);}.main{margin-left:0;}.stats-row{grid-template-columns:1fr 1fr;}.grid-2{grid-template-columns:1fr;}}
+@media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr;}.grid-3-1,.grid-2{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- ========== SIDEBAR ========== -->
-<aside class="sidebar" id="mainSidebar">
-  <a class="sidebar-logo" href="#">
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <a class="sidebar-logo" href="/painel">
     <div class="logo-icon">🔥</div>
     <div>
       <div class="logo-text">FENIXX</div>
@@ -285,11 +258,11 @@ select.form-input option{background:var(--dark-3);}
     </div>
   </a>
 
-  <!-- USER SIDEBAR NAV -->
+  <!-- NAV USUÁRIO -->
   <div id="userNav">
     <div class="sidebar-section">Principal</div>
     <ul class="sidebar-nav">
-      <li class="nav-item"><div class="nav-link active" onclick="showUserPage('dashboard')"><span class="nav-icon">🏠</span> Home</div></li>
+      <li class="nav-item"><div class="nav-link active" onclick="showUserPage('home')"><span class="nav-icon">🏠</span> Home</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showUserPage('servidores')"><span class="nav-icon">🖥️</span> Seus Servidores</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showUserPage('loja')"><span class="nav-icon">🛒</span> Loja Fenixx</div></li>
     </ul>
@@ -301,12 +274,14 @@ select.form-input option{background:var(--dark-3);}
     </ul>
   </div>
 
-  <!-- SERVER SIDEBAR NAV (hidden by default) -->
+  <!-- NAV SERVIDOR (oculto até entrar num servidor) -->
   <div id="serverNav" style="display:none;">
-    <div class="sidebar-section" id="serverNavTitle" style="color:var(--fire-1);display:flex;align-items:center;gap:6px;padding-bottom:10px;">🔥 FenixxRP</div>
+    <div class="sidebar-section" style="display:flex;align-items:center;gap:6px;">
+      <span id="srvNavIcon">🔥</span> <span id="srvNavName" style="color:var(--fire-1);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;"></span>
+    </div>
     <ul class="sidebar-nav">
       <li class="nav-item"><div class="nav-link active" onclick="showServerPage('overview')"><span class="nav-icon">📊</span> Visão Geral</div></li>
-      <li class="nav-item"><div class="nav-link" onclick="showServerPage('whitelist')"><span class="nav-icon">✅</span> Whitelist<span class="nav-badge red">12</span></div></li>
+      <li class="nav-item"><div class="nav-link" onclick="showServerPage('whitelist')"><span class="nav-icon">✅</span> Whitelist<span class="nav-badge red" id="pendenteBadge" style="display:none">0</span></div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('comandos')"><span class="nav-icon">⚡</span> Comandos</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('permissoes')"><span class="nav-icon">🛡️</span> Permissões</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('configwl')"><span class="nav-icon">⚙️</span> Configuração WL</div></li>
@@ -318,140 +293,71 @@ select.form-input option{background:var(--dark-3);}
   </div>
 
   <div style="flex:1"></div>
+
   <div class="sidebar-user">
-    <div class="user-avatar" id="sidebarAvatar">AD</div>
+    <div class="user-avatar-wrap" id="sidebarAvatar">?</div>
     <div>
-      <div class="user-name" id="sidebarName">Admin Fenixx</div>
-      <div class="user-role" id="sidebarRole">⭐ Owner</div>
+      <div class="user-name" id="sidebarName">Carregando...</div>
+      <div class="user-role" id="sidebarRole">Fenixx</div>
     </div>
-    <button class="user-logout" title="Sair">⏏</button>
+    <a class="user-logout" href="/logout" title="Sair">⏏</a>
   </div>
 </aside>
 
-<!-- ========== MAIN ========== -->
+<!-- ===== MAIN ===== -->
 <div class="main">
   <div class="topbar">
-    <div class="page-title" id="page-title">🏠 Home</div>
+    <div class="page-title" id="pageTitle">🏠 Home</div>
     <div class="topbar-search">
       <span style="color:var(--text-dim);font-size:13px;">🔍</span>
-      <input type="text" placeholder="Buscar membro, servidor...">
+      <input type="text" placeholder="Buscar...">
     </div>
     <div class="topbar-actions">
-      <div class="server-selector" id="topbarServer" style="display:none;" onclick="showServerPage('overview')">
+      <div class="server-chip" id="topServerChip" style="display:none;" onclick="showServerPage('overview')">
         <div class="server-dot"></div>
-        <span id="topbarServerName">FenixxRP</span>
+        <span id="topServerName"></span>
         <span style="color:var(--text-dim);font-size:11px;">▾</span>
       </div>
-      <div class="icon-btn" onclick="toggleNotif()">🔔<div class="notif-dot"></div></div>
+      <div class="icon-btn" onclick="toggleNotif()">🔔</div>
       <div class="icon-btn" onclick="showUserPage('conta')">👤</div>
     </div>
   </div>
 
-  <!-- NOTIF PANEL -->
+  <!-- NOTIF -->
   <div class="notif-panel" id="notifPanel">
     <div class="notif-header">🔔 Notificações</div>
-    <div class="notif-item"><div class="notif-icon">✅</div><div><div class="notif-text"><strong>MatheusGamer</strong> aprovado na whitelist</div><div class="notif-time">há 2 min</div></div></div>
-    <div class="notif-item"><div class="notif-icon">📋</div><div><div class="notif-text">3 novas candidaturas pendentes em FenixxRP</div><div class="notif-time">há 15 min</div></div></div>
-    <div class="notif-item"><div class="notif-icon">🚫</div><div><div class="notif-text"><strong>Pedro_Troll</strong> adicionado à blacklist</div><div class="notif-time">há 1h</div></div></div>
-    <div class="notif-item"><div class="notif-icon">⚙️</div><div><div class="notif-text">Configurações do bot atualizadas</div><div class="notif-time">há 3h</div></div></div>
+    <div class="notif-item"><div style="font-size:18px">✅</div><div><div style="font-size:12.5px">Painel conectado ao Discord com sucesso</div><div class="notif-time">agora</div></div></div>
   </div>
 
+  <!-- ===== CONTENT ===== -->
   <div class="content">
 
-    <!-- ============ USER PAGES ============ -->
+    <!-- ======= PÁGINAS DO USUÁRIO ======= -->
     <div id="userPages">
 
-      <!-- HOME / DASHBOARD -->
-      <div class="page-section active" id="page-dashboard">
+      <!-- HOME -->
+      <div class="page-section active" id="page-home">
         <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-label-top"><span>🖥️</span> Servidores</div>
-            <div class="stat-big" style="color:var(--fire-1)">3</div>
-            <div class="stat-trend trend-up">▲ 2 online agora</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label-top"><span>✅</span> Total Aprovados</div>
-            <div class="stat-big" style="color:var(--green)">248</div>
-            <div class="stat-trend trend-up">▲ +28 esta semana</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label-top"><span>📋</span> Pendentes</div>
-            <div class="stat-big" style="color:var(--yellow)">12</div>
-            <div class="stat-trend">Em todos os servidores</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label-top"><span>🚫</span> Bans Ativos</div>
-            <div class="stat-big" style="color:var(--red)">2</div>
-            <div class="stat-trend trend-down">Blacklist total</div>
-          </div>
+          <div class="stat-card"><div class="stat-label-top"><span>🖥️</span> Servidores</div><div class="stat-big" style="color:var(--fire-1)" id="statServidores">—</div><div class="stat-trend">com acesso admin</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>🤖</span> Com Bot</div><div class="stat-big" style="color:var(--green)" id="statComBot">—</div><div class="stat-trend trend-up">bot ativo</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>📋</span> Sem Bot</div><div class="stat-big" style="color:var(--yellow)" id="statSemBot">—</div><div class="stat-trend">aguardando adição</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>👤</span> Conta</div><div class="stat-big" style="color:var(--blue);font-size:22px;" id="statUser">—</div><div class="stat-trend">logado via Discord</div></div>
         </div>
         <div class="grid-3-1">
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">📊 Candidaturas — 7 dias</div>
-              <span class="card-action" onclick="showUserPage('servidores')">Ver servidores →</span>
-            </div>
+            <div class="card-header"><div class="card-title">📊 Atividade — 7 dias</div></div>
             <div class="card-body">
               <div class="chart-area">
-                <div class="chart-bar" style="height:35%"></div>
-                <div class="chart-bar" style="height:60%"></div>
-                <div class="chart-bar" style="height:45%"></div>
-                <div class="chart-bar peak" style="height:90%"></div>
-                <div class="chart-bar" style="height:70%"></div>
-                <div class="chart-bar" style="height:55%"></div>
-                <div class="chart-bar" style="height:40%"></div>
-                <div class="chart-bar" style="height:65%"></div>
-                <div class="chart-bar" style="height:80%"></div>
-                <div class="chart-bar peak" style="height:95%"></div>
-                <div class="chart-bar" style="height:75%"></div>
-                <div class="chart-bar" style="height:50%"></div>
-                <div class="chart-bar" style="height:85%"></div>
-                <div class="chart-bar" style="height:60%"></div>
+                <div class="chart-bar" style="height:35%"></div><div class="chart-bar" style="height:60%"></div><div class="chart-bar" style="height:45%"></div><div class="chart-bar peak" style="height:90%"></div><div class="chart-bar" style="height:70%"></div><div class="chart-bar" style="height:55%"></div><div class="chart-bar" style="height:40%"></div><div class="chart-bar" style="height:65%"></div><div class="chart-bar" style="height:80%"></div><div class="chart-bar peak" style="height:95%"></div><div class="chart-bar" style="height:75%"></div><div class="chart-bar" style="height:50%"></div><div class="chart-bar" style="height:85%"></div><div class="chart-bar" style="height:60%"></div>
               </div>
-              <div class="chart-labels">
-                <div class="chart-lbl">Seg</div><div class="chart-lbl"></div><div class="chart-lbl">Ter</div><div class="chart-lbl"></div><div class="chart-lbl">Qua</div><div class="chart-lbl"></div><div class="chart-lbl">Qui</div><div class="chart-lbl"></div><div class="chart-lbl">Sex</div><div class="chart-lbl"></div><div class="chart-lbl">Sáb</div><div class="chart-lbl"></div><div class="chart-lbl">Dom</div><div class="chart-lbl"></div>
-              </div>
+              <div class="chart-labels"><div class="chart-lbl">Seg</div><div class="chart-lbl"></div><div class="chart-lbl">Ter</div><div class="chart-lbl"></div><div class="chart-lbl">Qua</div><div class="chart-lbl"></div><div class="chart-lbl">Qui</div><div class="chart-lbl"></div><div class="chart-lbl">Sex</div><div class="chart-lbl"></div><div class="chart-lbl">Sáb</div><div class="chart-lbl"></div><div class="chart-lbl">Dom</div><div class="chart-lbl"></div></div>
             </div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title">⚡ Resumo</div></div>
+            <div class="card-header"><div class="card-title">⚡ Ações Rápidas</div></div>
             <div class="card-body">
-              <div class="mini-stats" style="margin-bottom:13px;">
-                <div class="mini-stat"><div class="mini-stat-num" style="color:var(--green)">92%</div><div class="mini-stat-label">Taxa Aprova</div></div>
-                <div class="mini-stat"><div class="mini-stat-num" style="color:var(--fire-1)">4.2m</div><div class="mini-stat-label">Tempo Médio</div></div>
-                <div class="mini-stat"><div class="mini-stat-num" style="color:var(--blue)">3</div><div class="mini-stat-label">Servidores</div></div>
-                <div class="mini-stat"><div class="mini-stat-num" style="color:var(--yellow)">12</div><div class="mini-stat-label">Pendentes</div></div>
-              </div>
-              <button class="btn-add" style="width:100%;justify-content:center" onclick="showUserPage('servidores')">🖥️ Meus Servidores</button>
-            </div>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-header"><div class="card-title">🕐 Últimas Candidaturas</div><span class="card-action" onclick="entrarServidor('FenixxRP','🔥')">Ver todas →</span></div>
-            <div class="card-body">
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Membro</th><th>Servidor</th><th>Status</th><th></th></tr></thead>
-                  <tbody>
-                    <tr><td><div class="td-user"><div class="td-avatar">MG</div><div><div class="td-name">MatheusGamer</div><div class="td-id">#4821</div></div></div></td><td style="font-size:12px;color:var(--text-dim)">FenixxRP</td><td><span class="badge approved">Aprovado</span></td><td><div class="action-btns"><div class="act-btn">👁️</div></div></td></tr>
-                    <tr><td><div class="td-user"><div class="td-avatar">LS</div><div><div class="td-name">Lucas_Silva</div><div class="td-id">#1239</div></div></div></td><td style="font-size:12px;color:var(--text-dim)">FenixxRP</td><td><span class="badge pending">Pendente</span></td><td><div class="action-btns"><div class="act-btn approve">✅<div class="tooltip">Aprovar</div></div><div class="act-btn reject">❌<div class="tooltip">Reprovar</div></div></div></td></tr>
-                    <tr><td><div class="td-user"><div class="td-avatar">JO</div><div><div class="td-name">João_Oliveira</div><div class="td-id">#7733</div></div></div></td><td style="font-size:12px;color:var(--text-dim)">CityLife</td><td><span class="badge reviewing">Revisando</span></td><td><div class="action-btns"><div class="act-btn">👁️</div></div></td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">📜 Atividade Recente</div></div>
-            <div class="card-body">
-              <div class="activity-list">
-                <div class="activity-item"><div class="act-dot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div><div><div class="act-msg"><strong>MatheusGamer</strong> aprovado — FenixxRP</div><div class="act-time">14:32 · há 2 min</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--yellow);box-shadow:0 0 5px var(--yellow)"></div><div><div class="act-msg">3 novas candidaturas recebidas</div><div class="act-time">14:15 · há 20 min</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div><div><div class="act-msg"><strong>Pedro_Test</strong> reprovado — Respostas inválidas</div><div class="act-time">13:21 · há 1h</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--blue);box-shadow:0 0 5px var(--blue)"></div><div><div class="act-msg">Configuração WL atualizada — FenixxRP</div><div class="act-time">12:00 · há 2h</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--fire-1);box-shadow:0 0 5px var(--fire-1)"></div><div><div class="act-msg">Bot reiniciado com sucesso</div><div class="act-time">11:30 · há 3h</div></div></div>
-              </div>
+              <button class="btn-add" style="width:100%;justify-content:center;margin-bottom:10px;" onclick="showUserPage('servidores')">🖥️ Gerenciar Servidores</button>
+              <button class="btn-add" style="width:100%;justify-content:center;background:linear-gradient(135deg,var(--blue),#2255cc);" onclick="showUserPage('loja')">🛒 Ver Loja</button>
             </div>
           </div>
         </div>
@@ -459,73 +365,51 @@ select.form-input option{background:var(--dark-3);}
 
       <!-- SERVIDORES -->
       <div class="page-section" id="page-servidores">
-        <div style="margin-bottom:22px;">
-          <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Servidores onde você é administrador ou dono. Adicione o Fenixx aos que ainda não têm o bot.</div>
-        </div>
-        <div class="server-list" id="serverListUser">
-          <!-- renderizado pelo JS -->
+        <div id="serverListContainer">
+          <div class="loading-state"><div class="spinner"></div> Buscando seus servidores...</div>
         </div>
       </div>
 
       <!-- LOJA -->
       <div class="page-section" id="page-loja">
-        <div class="filter-bar">
-          <button class="filter-btn active-filter" onclick="setFilter(this)">Todos</button>
-          <button class="filter-btn" onclick="setFilter(this)">Planos</button>
-          <button class="filter-btn" onclick="setFilter(this)">Add-ons</button>
-          <button class="filter-btn" onclick="setFilter(this)">Temas</button>
-        </div>
-        <div class="shop-grid">
-          <div class="shop-card"><div class="shop-img">🚀</div><div class="shop-info"><div class="shop-name">Plano Premium</div><div class="shop-desc">Sem limites de candidaturas, relatórios avançados e suporte prioritário.</div><div class="shop-price">R$ 29,90<span style="font-size:13px;color:var(--text-dim)">/mês</span></div><button class="shop-btn">Assinar Agora</button></div></div>
-          <div class="shop-card"><div class="shop-img">💎</div><div class="shop-info"><div class="shop-name">Plano Diamante</div><div class="shop-desc">Tudo do Premium + múltiplos servidores ilimitados e API exclusiva.</div><div class="shop-price">R$ 59,90<span style="font-size:13px;color:var(--text-dim)">/mês</span></div><button class="shop-btn">Assinar Agora</button></div></div>
-          <div class="shop-card"><div class="shop-img">🎨</div><div class="shop-info"><div class="shop-name">Tema Dark Fire</div><div class="shop-desc">Personalização visual exclusiva com tema de fogo escuro para seu painel.</div><div class="shop-price">R$ 9,90</div><button class="shop-btn">Comprar</button></div></div>
-          <div class="shop-card"><div class="shop-img">📊</div><div class="shop-info"><div class="shop-name">Relatórios Pro</div><div class="shop-desc">Exportação avançada de dados em Excel, PDF e integração com Google Sheets.</div><div class="shop-price">R$ 14,90<span style="font-size:13px;color:var(--text-dim)">/mês</span></div><button class="shop-btn">Adicionar</button></div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;">
+          <div class="card" style="margin-bottom:0;"><div style="height:110px;background:linear-gradient(135deg,rgba(255,107,0,0.2),rgba(255,69,0,0.08));display:flex;align-items:center;justify-content:center;font-size:40px;">🚀</div><div style="padding:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:5px;">Plano Premium</div><div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Candidaturas ilimitadas, relatórios avançados e suporte prioritário.</div><div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--fire-3);">R$ 29,90<span style="font-size:13px;color:var(--text-dim)">/mês</span></div><button class="btn-add" style="width:100%;justify-content:center;margin-top:10px;">Assinar</button></div></div>
+          <div class="card" style="margin-bottom:0;"><div style="height:110px;background:linear-gradient(135deg,rgba(68,136,255,0.2),rgba(68,136,255,0.05));display:flex;align-items:center;justify-content:center;font-size:40px;">💎</div><div style="padding:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:5px;">Plano Diamante</div><div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Tudo do Premium + múltiplos servidores e API exclusiva.</div><div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--blue);">R$ 59,90<span style="font-size:13px;color:var(--text-dim)">/mês</span></div><button class="btn-add" style="width:100%;justify-content:center;margin-top:10px;background:linear-gradient(135deg,var(--blue),#2255cc);">Assinar</button></div></div>
         </div>
       </div>
 
       <!-- NOTIFICAÇÕES -->
       <div class="page-section" id="page-notificacoes">
-        <div class="card" style="max-width:680px;">
-          <div class="card-header"><div class="card-title">🔔 Notificações do Bot</div></div>
+        <div class="card" style="max-width:640px;">
+          <div class="card-header"><div class="card-title">🔔 Tipos de Notificação</div></div>
           <div class="card-body">
-            <div class="settings-group">
-              <div class="settings-group-title">Whitelist</div>
-              <div class="setting-item"><div class="setting-icon">✅</div><div><div class="setting-label">Candidatura aprovada</div><div class="setting-desc">Notifica quando uma WL for aprovada</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">❌</div><div><div class="setting-label">Candidatura reprovada</div><div class="setting-desc">Notifica quando uma WL for reprovada</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">📋</div><div><div class="setting-label">Nova candidatura recebida</div><div class="setting-desc">Alerta ao receber nova solicitação</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">🚫</div><div><div class="setting-label">Adição à blacklist</div><div class="setting-desc">Notifica quando um membro for bloqueado</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-            </div>
-            <div class="settings-group">
-              <div class="settings-group-title">Servidor</div>
-              <div class="setting-item"><div class="setting-icon">👋</div><div><div class="setting-label">Boas-vindas</div><div class="setting-desc">Mensagem de boas-vindas para novos membros</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">⚠️</div><div><div class="setting-label">Avisos do servidor</div><div class="setting-desc">Notificações de regras e avisos gerais</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">⭐</div><div><div class="setting-label">Reputação</div><div class="setting-desc">Notifica ao ganhar ou perder reputação</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-              <div class="setting-item"><div class="setting-icon">🤖</div><div><div class="setting-label">Atualizações do bot</div><div class="setting-desc">Novidades e atualizações do Fenixx</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-            </div>
+            <div class="settings-group-title">Whitelist</div>
+            <div class="setting-item"><div class="setting-icon">✅</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Candidatura aprovada</div><div style="font-size:11px;color:var(--text-dim);">Notifica quando uma WL for aprovada</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><div class="setting-icon">❌</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Candidatura reprovada</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><div class="setting-icon">📋</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Nova candidatura recebida</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><div class="setting-icon">🚫</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Adição à blacklist</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+            <div class="settings-group-title">Servidor</div>
+            <div class="setting-item"><div class="setting-icon">👋</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Boas-vindas</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><div class="setting-icon">⭐</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Reputação</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-item"><div class="setting-icon">🤖</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Atualizações do bot</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
           </div>
         </div>
       </div>
 
       <!-- PERSONALIZAÇÃO -->
       <div class="page-section" id="page-personalizacao">
-        <div class="grid-2" style="max-width:900px;">
+        <div class="grid-2" style="max-width:860px;">
           <div class="card">
-            <div class="card-header"><div class="card-title">🎨 Layout do Perfil</div></div>
+            <div class="card-header"><div class="card-title">🎨 Layout</div></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Estilo do Painel</label><select class="form-input"><option>Dark Fire (padrão)</option><option>Dark Blue</option><option>Dark Purple</option><option>Midnight</option></select></div>
+              <div class="form-group"><label class="form-label">Estilo do Painel</label><select class="form-input"><option>Dark Fire (padrão)</option><option>Dark Blue</option><option>Midnight</option></select></div>
               <div class="form-group"><label class="form-label">Cor de Destaque</label><div style="display:flex;gap:8px;align-items:center"><input class="form-input" type="text" value="#FF6B00" style="flex:1"><input type="color" value="#FF6B00" style="width:40px;height:40px;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer;padding:2px"></div></div>
-              <div class="form-group"><label class="form-label">Fonte do Painel</label><select class="form-input"><option>Exo 2 (padrão)</option><option>Rajdhani</option><option>JetBrains Mono</option></select></div>
             </div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title">🖼️ Background & Avatar</div></div>
+            <div class="card-header"><div class="card-title">🖼️ Mídia</div></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Background do Perfil</label>
-                <div style="height:100px;background:linear-gradient(135deg,rgba(255,107,0,0.2),rgba(255,69,0,0.05));border:1px dashed rgba(255,107,0,0.3);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:13px;" onclick="alert('Funcionalidade de upload disponível na versão conectada ao backend.')">📁 Clique para enviar imagem</div>
-              </div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Banner do Perfil</label>
-                <div style="height:60px;background:linear-gradient(135deg,rgba(255,107,0,0.15),rgba(255,69,0,0.04));border:1px dashed rgba(255,107,0,0.25);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:12px;" onclick="alert('Upload disponível na versão conectada.')">📁 Enviar banner</div>
-              </div>
+              <div class="form-group"><label class="form-label">Background do Perfil</label><div style="height:90px;background:linear-gradient(135deg,rgba(255,107,0,0.15),rgba(255,69,0,0.04));border:1px dashed rgba(255,107,0,0.3);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:13px;">📁 Enviar imagem</div></div>
             </div>
           </div>
         </div>
@@ -533,81 +417,45 @@ select.form-input option{background:var(--dark-3);}
 
       <!-- CONTA -->
       <div class="page-section" id="page-conta">
-        <div class="card" style="max-width:620px;">
+        <div class="card" style="max-width:600px;">
           <div class="card-header"><div class="card-title">👤 Minha Conta</div></div>
           <div class="card-body">
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border-soft);">
-              <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#fff;flex-shrink:0;">AD</div>
+              <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--fire-1),var(--fire-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#fff;overflow:hidden;" id="contaAvatar">?</div>
               <div>
-                <div style="font-weight:700;font-size:16px;margin-bottom:3px;">Admin Fenixx</div>
-                <div style="font-size:12px;color:var(--text-dim);">admin@fenixx.gg</div>
-                <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire-1);margin-top:4px;">⭐ Owner · Plano Premium</div>
+                <div style="font-weight:700;font-size:16px;margin-bottom:3px;" id="contaUsername">—</div>
+                <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire-1);">Logado via Discord</div>
               </div>
             </div>
-            <div class="settings-group">
-              <div class="settings-group-title">Informações</div>
-              <div class="form-group"><label class="form-label">Nome de exibição</label><input class="form-input" type="text" value="Admin Fenixx"></div>
-              <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" value="admin@fenixx.gg"></div>
-            </div>
-            <div class="settings-group">
-              <div class="settings-group-title">API & Segurança</div>
-              <div class="form-group"><label class="form-label">Chave de API</label><div style="display:flex;gap:8px"><input class="form-input" type="password" value="fnx_api_xxxxxxxxxxxxxxxxxxxx" style="flex:1"><button class="btn-ghost" style="white-space:nowrap">Ver</button></div></div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Token Discord</label><input class="form-input" type="password" value="MTk0NjM1MjAyNDUwMjYzMTA0.XXXXXX"></div>
-            </div>
-            <div class="settings-group">
-              <div class="settings-group-title">Diretrizes da Comunidade</div>
-              <div style="font-size:13px;color:var(--text-dim);line-height:1.6;background:var(--dark-3);border-radius:9px;padding:14px 16px;border:1px solid var(--border-soft);">Ao usar o Fenixx, você concorda em não utilizar o sistema para fins abusivos, spam ou qualquer atividade que viole os Termos de Serviço do Discord. O bot deve ser usado exclusivamente para gerenciar whitelists de servidores RP de forma justa e transparente.</div>
-            </div>
-            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;">
-              <button class="btn-ghost">Cancelar</button>
-              <button class="btn-add">💾 Salvar Alterações</button>
-            </div>
+            <div class="form-group"><label class="form-label">ID Discord</label><input class="form-input" type="text" id="contaId" readonly></div>
+            <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" id="contaUsernameInput" readonly></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;"><a href="/logout" style="text-decoration:none;"><button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011);">⏏ Sair da Conta</button></a></div>
           </div>
         </div>
       </div>
     </div><!-- /userPages -->
 
-    <!-- ============ SERVER PAGES ============ -->
+    <!-- ======= PÁGINAS DO SERVIDOR ======= -->
     <div id="serverPages" style="display:none;">
 
       <!-- VISÃO GERAL -->
       <div class="page-section active" id="page-overview">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
           <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-          <div style="font-size:13px;color:var(--text-dim);">Painel do servidor selecionado</div>
+          <div style="font-size:13px;color:var(--text-dim);" id="overviewServerName"></div>
         </div>
         <div class="stats-row">
-          <div class="stat-card"><div class="stat-label-top"><span>👥</span> Total WL</div><div class="stat-big" style="color:var(--fire-1)">248</div><div class="stat-trend trend-up">▲ Ativos na whitelist</div></div>
-          <div class="stat-card"><div class="stat-label-top"><span>✅</span> Aprovados Hoje</div><div class="stat-big" style="color:var(--green)">28</div><div class="stat-trend trend-up">▲ +12% vs semana</div></div>
-          <div class="stat-card"><div class="stat-label-top"><span>🔨</span> Bans Ativos</div><div class="stat-big" style="color:var(--red)">2</div><div class="stat-trend">Blacklist ativa</div></div>
-          <div class="stat-card"><div class="stat-label-top"><span>🎮</span> Players Online</div><div class="stat-big" style="color:var(--blue)">87</div><div class="stat-trend trend-up">▲ Pico hoje</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>👥</span> Total WL</div><div class="stat-big" style="color:var(--fire-1)">—</div><div class="stat-trend">membros aprovados</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>✅</span> Aprovados Hoje</div><div class="stat-big" style="color:var(--green)">—</div><div class="stat-trend trend-up">via whitelist</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>🔨</span> Bans Ativos</div><div class="stat-big" style="color:var(--red)">—</div><div class="stat-trend">blacklist ativa</div></div>
+          <div class="stat-card"><div class="stat-label-top"><span>⏳</span> Pendentes</div><div class="stat-big" style="color:var(--yellow)" id="overviewPendentes">—</div><div class="stat-trend">aguardando revisão</div></div>
         </div>
-        <div class="grid-3-1">
-          <div class="card">
-            <div class="card-header"><div class="card-title">📋 Últimas Solicitações de Whitelist</div><span class="card-action" onclick="showServerPage('whitelist')">Ver todas →</span></div>
-            <div class="card-body">
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Jogador Discord</th><th>Nome Personagem</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
-                  <tbody>
-                    <tr><td><div class="td-user"><div class="td-avatar">MG</div><div><div class="td-name">MatheusGamer</div></div></div></td><td style="font-size:12.5px;color:var(--fire-3)">Matheus Costa</td><td><span class="badge approved">Aprovado</span></td><td style="font-size:11px;color:var(--text-dim)">12/04 14:32</td><td><div class="action-btns"><div class="act-btn">👁️</div></div></td></tr>
-                    <tr><td><div class="td-user"><div class="td-avatar">LS</div><div><div class="td-name">Lucas_Silva</div></div></div></td><td style="font-size:12px;color:var(--text-dim)">—</td><td><span class="badge pending">Pendente</span></td><td style="font-size:11px;color:var(--text-dim)">12/04 14:18</td><td><div class="action-btns"><div class="act-btn approve" onclick="quickApprove('LS','Lucas_Silva')">✅<div class="tooltip">Aprovar</div></div><div class="act-btn reject" onclick="quickReject('LS','Lucas_Silva')">❌<div class="tooltip">Reprovar</div></div></div></td></tr>
-                    <tr><td><div class="td-user"><div class="td-avatar">JO</div><div><div class="td-name">João_Oliveira</div></div></div></td><td style="font-size:12.5px;color:var(--fire-3)">João Pereira</td><td><span class="badge reviewing">Revisando</span></td><td style="font-size:11px;color:var(--text-dim)">12/04 13:55</td><td><div class="action-btns"><div class="act-btn">👁️</div></div></td></tr>
-                    <tr><td><div class="td-user"><div class="td-avatar" style="background:linear-gradient(135deg,#ff4466,#aa0022)">PT</div><div><div class="td-name">Pedro_Test</div></div></div></td><td style="font-size:12px;color:var(--text-dim)">—</td><td><span class="badge rejected">Reprovado</span></td><td style="font-size:11px;color:var(--text-dim)">12/04 13:21</td><td><div class="action-btns"><div class="act-btn">👁️</div></div></td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">📜 Atividade Recente</div></div>
-            <div class="card-body">
-              <div class="activity-list">
-                <div class="activity-item"><div class="act-dot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div><div><div class="act-msg"><strong>MatheusGamer</strong> entrou na whitelist</div><div class="act-time">14:32 · há 2 min</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div><div><div class="act-msg"><strong>Pedro_Test</strong> foi banido</div><div class="act-time">13:21 · há 1h</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--blue);box-shadow:0 0 5px var(--blue)"></div><div><div class="act-msg">Configuração de WL atualizada</div><div class="act-time">12:00 · há 2h</div></div></div>
-                <div class="activity-item"><div class="act-dot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div><div><div class="act-msg"><strong>AnaRPG</strong> entrou na whitelist</div><div class="act-time">10:55 · há 4h</div></div></div>
-              </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">📜 Atividade Recente</div></div>
+          <div class="card-body">
+            <div class="activity-list">
+              <div class="activity-item"><div class="act-dot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div><div><div class="act-msg">Painel conectado ao servidor <strong id="actServerName"></strong></div><div class="act-time">agora</div></div></div>
+              <div class="activity-item"><div class="act-dot" style="background:var(--blue);box-shadow:0 0 5px var(--blue)"></div><div><div class="act-msg">Configurações carregadas da API</div><div class="act-time">agora</div></div></div>
             </div>
           </div>
         </div>
@@ -618,81 +466,36 @@ select.form-input option{background:var(--dark-3);}
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
           <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
         </div>
-        <!-- TABS -->
-        <div style="display:flex;gap:3px;margin-bottom:20px;border-bottom:1px solid var(--border-soft);padding-bottom:0;">
-          <div style="padding:9px 18px;font-size:13px;font-weight:600;color:var(--fire-1);border-bottom:2px solid var(--fire-1);margin-bottom:-1px;cursor:pointer;" onclick="showWLTab('aprovados',this)">✅ Aprovados <span style="font-size:11px;color:var(--text-dim)">(248)</span></div>
-          <div style="padding:9px 18px;font-size:13px;font-weight:600;color:var(--text-dim);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;" onclick="showWLTab('pendentes',this)">⏳ Pendentes <span style="font-size:11px;color:var(--yellow)">(12)</span></div>
-          <div style="padding:9px 18px;font-size:13px;font-weight:600;color:var(--text-dim);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;" onclick="showWLTab('reprovados',this)">❌ Reprovados <span style="font-size:11px;color:var(--red)">(4)</span></div>
+        <div class="wl-tab-bar">
+          <div class="wl-tab active" onclick="showWLTab('aprovados',this)">✅ Aprovados</div>
+          <div class="wl-tab" onclick="showWLTab('pendentes',this)">⏳ Pendentes</div>
+          <div class="wl-tab" onclick="showWLTab('reprovados',this)">❌ Reprovados</div>
         </div>
-
-        <div id="wl-aprovados">
-          <div class="filter-bar">
-            <button class="filter-btn active-filter" onclick="setFilter(this)">Todos</button>
-            <button class="filter-btn" onclick="setFilter(this)">Esta semana</button>
-            <div class="filter-spacer"></div>
-            <button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011)">🔄 Revogar Selecionados</button>
-          </div>
-          <div class="card">
-            <div class="table-wrap"><table>
-              <thead><tr><th>Membro</th><th>ID Discord</th><th>Aprovado em</th><th>Por</th><th>Nota</th><th>Ações</th></tr></thead>
-              <tbody>
-                <tr><td><div class="td-user"><div class="td-avatar">MG</div><div><div class="td-name">MatheusGamer</div><div class="td-id">Matheus Costa</div></div></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim)">739201047</td><td style="font-size:11.5px;color:var(--text-dim)">12/04 14:32</td><td style="font-size:12.5px;color:var(--fire-1)">Admin</td><td><span style="color:var(--green);font-weight:700">9/10</span></td><td><div class="action-btns"><div class="act-btn">👁️</div><div class="act-btn reject">🔄<div class="tooltip">Revogar</div></div><div class="act-btn">🚫<div class="tooltip">Blacklist</div></div></div></td></tr>
-                <tr><td><div class="td-user"><div class="td-avatar">AR</div><div><div class="td-name">AnaRPG</div><div class="td-id">Ana Souza</div></div></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim)">271094832</td><td style="font-size:11.5px;color:var(--text-dim)">12/04 10:55</td><td style="font-size:12.5px;color:var(--fire-1)">Admin</td><td><span style="color:var(--green);font-weight:700">10/10</span></td><td><div class="action-btns"><div class="act-btn">👁️</div><div class="act-btn reject">🔄<div class="tooltip">Revogar</div></div></div></td></tr>
-              </tbody>
-            </table></div>
-          </div>
-        </div>
-
-        <div id="wl-pendentes" style="display:none;">
-          <div class="filter-bar"><div class="filter-spacer"></div><button class="btn-add">✅ Aprovar em Massa</button></div>
-          <div class="card">
-            <div class="table-wrap"><table>
-              <thead><tr><th>Membro</th><th>ID Discord</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead>
-              <tbody>
-                <tr><td><div class="td-user"><div class="td-avatar">LS</div><div><div class="td-name">Lucas_Silva</div></div></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim)">356920184</td><td style="font-size:11.5px;color:var(--text-dim)">12/04 14:18</td><td><span class="badge pending">Pendente</span></td><td><div class="action-btns"><div class="act-btn">👁️</div><div class="act-btn approve" onclick="quickApprove('LS','Lucas_Silva')">✅<div class="tooltip">Aprovar</div></div><div class="act-btn reject" onclick="quickReject('LS','Lucas_Silva')">❌<div class="tooltip">Reprovar</div></div></div></td></tr>
-                <tr><td><div class="td-user"><div class="td-avatar">JO</div><div><div class="td-name">João_Oliveira</div></div></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim)">489021748</td><td style="font-size:11.5px;color:var(--text-dim)">12/04 13:55</td><td><span class="badge reviewing">Revisando</span></td><td><div class="action-btns"><div class="act-btn">👁️</div><div class="act-btn approve" onclick="quickApprove('JO','João_Oliveira')">✅</div><div class="act-btn reject" onclick="quickReject('JO','João_Oliveira')">❌</div></div></td></tr>
-              </tbody>
-            </table></div>
-          </div>
-        </div>
-
-        <div id="wl-reprovados" style="display:none;">
-          <div class="card">
-            <div class="table-wrap"><table>
-              <thead><tr><th>Membro</th><th>ID Discord</th><th>Reprovado em</th><th>Motivo</th><th>Nota</th><th>Ações</th></tr></thead>
-              <tbody>
-                <tr><td><div class="td-user"><div class="td-avatar" style="background:linear-gradient(135deg,#ff4466,#aa0022)">PT</div><div><div class="td-name">Pedro_Test</div></div></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim)">100293847</td><td style="font-size:11.5px;color:var(--text-dim)">12/04 13:21</td><td style="font-size:12.5px;color:var(--red)">Respostas inválidas</td><td><span style="color:var(--red);font-weight:700">2/10</span></td><td><div class="action-btns"><div class="act-btn">👁️</div><div class="act-btn approve">🔄<div class="tooltip">2ª chance</div></div><div class="act-btn">🚫</div></div></td></tr>
-              </tbody>
-            </table></div>
-          </div>
-        </div>
+        <div id="wl-aprovados"><div class="empty-state"><div class="empty-icon">✅</div><p>Os membros aprovados aparecerão aqui<br>quando a integração com o bot estiver completa.</p></div></div>
+        <div id="wl-pendentes" style="display:none;"><div class="empty-state"><div class="empty-icon">⏳</div><p>Candidaturas pendentes aparecerão aqui.</p></div></div>
+        <div id="wl-reprovados" style="display:none;"><div class="empty-state"><div class="empty-icon">❌</div><p>Membros reprovados aparecerão aqui.</p></div></div>
       </div>
 
       <!-- COMANDOS -->
       <div class="page-section" id="page-comandos">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
-          <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;"><div class="back-btn" onclick="voltarPainel()">◀ Voltar</div></div>
         <div class="grid-2">
           <div class="card">
-            <div class="card-header"><div class="card-title">⚡ Comandos Disponíveis</div></div>
+            <div class="card-header"><div class="card-title">⚡ Comandos do Bot</div></div>
             <div class="card-body">
-              <div class="command-item"><span class="cmd-tag">/config_wl</span><div class="cmd-desc">Abre o painel de configuração da whitelist no Discord</div></div>
-              <div class="command-item"><span class="cmd-tag">/wl aprovar</span><div class="cmd-desc">Aprova uma candidatura diretamente pelo Discord</div></div>
-              <div class="command-item"><span class="cmd-tag">/wl reprovar</span><div class="cmd-desc">Reprova uma candidatura com motivo</div></div>
-              <div class="command-item"><span class="cmd-tag">/wl lista</span><div class="cmd-desc">Exibe lista de membros aprovados</div></div>
+              <div class="command-item"><span class="cmd-tag">/config_wl</span><div class="cmd-desc">Abre o painel de configuração da whitelist</div></div>
+              <div class="command-item"><span class="cmd-tag">/wl aprovar</span><div class="cmd-desc">Aprova candidatura diretamente pelo Discord</div></div>
+              <div class="command-item"><span class="cmd-tag">/wl reprovar</span><div class="cmd-desc">Reprova candidatura com motivo</div></div>
+              <div class="command-item"><span class="cmd-tag">/wl lista</span><div class="cmd-desc">Lista membros aprovados</div></div>
               <div class="command-item"><span class="cmd-tag">/blacklist add</span><div class="cmd-desc">Adiciona membro à blacklist</div></div>
-              <div class="command-item"><span class="cmd-tag">/blacklist remove</span><div class="cmd-desc">Remove membro da blacklist</div></div>
-              <div class="command-item"><span class="cmd-tag">/stats</span><div class="cmd-desc">Exibe estatísticas do servidor</div></div>
+              <div class="command-item"><span class="cmd-tag">/stats</span><div class="cmd-desc">Estatísticas do servidor</div></div>
             </div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title">🛠️ Comandos Personalizados</div><button class="btn-add" onclick="openModal('cmdModal')">➕ Novo</button></div>
+            <div class="card-header"><div class="card-title">🛠️ Prefixo do Bot</div></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Prefixo do Bot</label><input class="form-input" type="text" value="/" placeholder="Ex: ! ou /"></div>
-              <div style="font-size:12px;color:var(--text-dim);margin-bottom:16px;">Comandos personalizados criados para este servidor:</div>
-              <div class="command-item"><span class="cmd-tag">/regras</span><div class="cmd-desc">Exibe as regras do servidor automaticamente</div><div class="act-btn" style="margin-left:auto;">✏️</div></div>
-              <div class="command-item"><span class="cmd-tag">/status</span><div class="cmd-desc">Mostra status de whitelist do membro</div><div class="act-btn" style="margin-left:auto;">✏️</div></div>
+              <div class="form-group"><label class="form-label">Prefixo dos Comandos</label><input class="form-input" type="text" value="/" placeholder="Ex: ! ou /"></div>
+              <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">Os comandos com <code style="background:var(--dark-3);padding:1px 5px;border-radius:4px;color:var(--fire-3);font-family:'JetBrains Mono',monospace">/</code> são slash commands do Discord e não precisam de prefixo.</div>
             </div>
           </div>
         </div>
@@ -700,36 +503,24 @@ select.form-input option{background:var(--dark-3);}
 
       <!-- PERMISSÕES -->
       <div class="page-section" id="page-permissoes">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
-          <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-        </div>
-        <div class="card" style="max-width:720px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;"><div class="back-btn" onclick="voltarPainel()">◀ Voltar</div></div>
+        <div class="card" style="max-width:700px;">
           <div class="card-header"><div class="card-title">🛡️ Cargos & Permissões</div><button class="btn-add" onclick="openModal('roleModal')">➕ Novo Cargo</button></div>
           <div class="card-body">
-            <!-- TABLE HEADER -->
-            <div style="display:grid;grid-template-columns:1fr 90px 90px 90px 90px;gap:8px;padding:10px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-weight:700;border-bottom:1px solid var(--border-soft);">
+            <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:8px;padding:10px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-weight:700;border-bottom:1px solid var(--border-soft);">
               <div>Cargo</div><div style="text-align:center">Aprovar</div><div style="text-align:center">Reprovar</div><div style="text-align:center">Config</div><div style="text-align:center">Admin</div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 90px 90px 90px 90px;gap:8px;padding:14px;align-items:center;border-bottom:1px solid var(--border-soft);">
-              <div><div style="font-weight:700;font-size:13px;">👑 Owner — @Admin</div><div style="font-size:11px;color:var(--text-dim)">Acesso total ao sistema</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto">✓</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto">✓</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto">✓</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto">✓</div></div>
+            <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:8px;padding:14px;align-items:center;border-bottom:1px solid var(--border-soft);">
+              <div><div style="font-weight:700;font-size:13px;">👑 Owner</div><div style="font-size:11px;color:var(--text-dim)">Acesso total</div></div>
+              <div><div class="perm-check on">✓</div></div><div><div class="perm-check on">✓</div></div><div><div class="perm-check on">✓</div></div><div><div class="perm-check on">✓</div></div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 90px 90px 90px 90px;gap:8px;padding:14px;align-items:center;border-bottom:1px solid var(--border-soft);">
-              <div><div style="font-weight:700;font-size:13px;">🛡️ Moderador — @Mod</div><div style="font-size:11px;color:var(--text-dim)">Pode aprovar e reprovar</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto" onclick="this.classList.toggle('on')">✓</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto" onclick="this.classList.toggle('on')">✓</div></div>
-              <div style="text-align:center"><div class="perm-check off" style="margin:auto" onclick="this.classList.toggle('on')"></div></div>
-              <div style="text-align:center"><div class="perm-check off" style="margin:auto" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:8px;padding:14px;align-items:center;border-bottom:1px solid var(--border-soft);">
+              <div><div style="font-weight:700;font-size:13px;">🛡️ Moderador</div><div style="font-size:11px;color:var(--text-dim)">Aprovar e reprovar</div></div>
+              <div><div class="perm-check on" onclick="this.classList.toggle('on')">✓</div></div><div><div class="perm-check on" onclick="this.classList.toggle('on')">✓</div></div><div><div class="perm-check off" onclick="this.classList.toggle('on')"></div></div><div><div class="perm-check off" onclick="this.classList.toggle('on')"></div></div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 90px 90px 90px 90px;gap:8px;padding:14px;align-items:center;">
-              <div><div style="font-weight:700;font-size:13px;">✅ Aprovador — @Staff</div><div style="font-size:11px;color:var(--text-dim)">Apenas aprovação</div></div>
-              <div style="text-align:center"><div class="perm-check on" style="margin:auto" onclick="this.classList.toggle('on')">✓</div></div>
-              <div style="text-align:center"><div class="perm-check off" style="margin:auto" onclick="this.classList.toggle('on')"></div></div>
-              <div style="text-align:center"><div class="perm-check off" style="margin:auto" onclick="this.classList.toggle('on')"></div></div>
-              <div style="text-align:center"><div class="perm-check off" style="margin:auto" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:8px;padding:14px;align-items:center;">
+              <div><div style="font-weight:700;font-size:13px;">✅ Staff</div><div style="font-size:11px;color:var(--text-dim)">Apenas aprovação</div></div>
+              <div><div class="perm-check on" onclick="this.classList.toggle('on')">✓</div></div><div><div class="perm-check off" onclick="this.classList.toggle('on')"></div></div><div><div class="perm-check off" onclick="this.classList.toggle('on')"></div></div><div><div class="perm-check off" onclick="this.classList.toggle('on')"></div></div>
             </div>
           </div>
         </div>
@@ -739,49 +530,37 @@ select.form-input option{background:var(--dark-3);}
       <div class="page-section" id="page-configwl">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
           <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-          <div style="flex:1"></div>
-          <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar</button>
+          <div style="flex:1;"></div>
+          <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar ao Bot</button>
         </div>
 
-        <div style="background:linear-gradient(135deg,rgba(255,107,0,0.09),rgba(255,69,0,0.04));border:1px solid rgba(255,107,0,0.22);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:28px;">⚙️</div>
+        <div style="background:linear-gradient(135deg,rgba(255,107,0,0.08),rgba(255,69,0,0.03));border:1px solid rgba(255,107,0,0.2);border-radius:13px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
+          <div style="font-size:26px;">⚙️</div>
           <div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;">Configuração via Discord — <span style="color:var(--fire-1)">/config_wl</span></div>
-            <div style="font-size:12.5px;color:var(--text-dim);">Use <code style="background:var(--dark-3);padding:1px 5px;border-radius:4px;color:var(--fire-3);font-family:'JetBrains Mono',monospace">/config_wl</code> no Discord ou configure tudo aqui. As alterações são aplicadas automaticamente ao bot.</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:3px;">Configuração via <span style="color:var(--fire-1)">/config_wl</span> ou pelo painel</div>
+            <div style="font-size:12px;color:var(--text-dim);">As alterações salvas aqui são enviadas ao bot e aplicadas imediatamente no servidor Discord.</div>
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
-          <div class="card">
-            <div class="card-header"><div class="card-title">📢 Canais do Servidor</div></div>
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-header"><div class="card-title">📢 Canais do Servidor</div><span style="font-size:10px;color:var(--text-dim);letter-spacing:1px;">DISCORD</span></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Canal do Painel de Liberação</label>
-                <select class="form-input" id="cfg-painel"><option>#liberacao</option><option>#whitelist</option><option>#candidaturas</option></select>
-                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">O bot fixa o painel de liberação neste canal.</div>
-              </div>
-              <div class="form-group"><label class="form-label">Canal de Aprovados</label>
-                <select class="form-input" id="cfg-aceitos"><option>#wl-aprovados</option><option>#aprovados</option><option>#liberados</option></select>
-              </div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Canal de Reprovados</label>
-                <select class="form-input" id="cfg-recusados"><option>#wl-reprovados</option><option>#reprovados</option><option>#negados</option></select>
-              </div>
+              <div class="form-group"><label class="form-label">Canal do Painel de Liberação</label><input class="form-input" type="text" id="cfg-painel" placeholder="Ex: liberacao"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Nome do canal onde o painel será fixado.</div></div>
+              <div class="form-group"><label class="form-label">Canal de Aprovados</label><input class="form-input" type="text" id="cfg-aceitos" placeholder="Ex: wl-aprovados"></div>
+              <div class="form-group" style="margin-bottom:0;"><label class="form-label">Canal de Reprovados</label><input class="form-input" type="text" id="cfg-recusados" placeholder="Ex: wl-reprovados"></div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">🗂️ Categoria & Cargos</div></div>
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-header"><div class="card-title">🗂️ Categoria & Cargo</div><span style="font-size:10px;color:var(--text-dim);letter-spacing:1px;">DISCORD</span></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Categoria dos Tickets</label>
-                <select class="form-input" id="cfg-categoria"><option>LIBERAÇÕES</option><option>WHITELIST</option><option>CANDIDATURAS</option></select>
-                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura vira um ticket nesta categoria.</div>
-              </div>
-              <div class="form-group"><label class="form-label">Cargo Concedido na Aprovação</label>
-                <select class="form-input" id="cfg-cargo"><option>@Whitelist</option><option>@Liberado</option><option>@Membro</option><option>@Jogador</option></select>
-              </div>
-              <div class="form-group" style="margin-bottom:0"><label class="form-label">Tag / Apelido no Discord</label>
+              <div class="form-group"><label class="form-label">Categoria dos Tickets</label><input class="form-input" type="text" id="cfg-categoria" placeholder="Ex: LIBERAÇÕES"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura abre um ticket aqui.</div></div>
+              <div class="form-group"><label class="form-label">Cargo Concedido na Aprovação</label><input class="form-input" type="text" id="cfg-cargo" placeholder="Ex: Whitelist"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Nome exato do cargo no servidor.</div></div>
+              <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tag / Apelido no Discord</label>
                 <input class="form-input" type="text" id="cfg-tag" placeholder="Ex: NomePersonagem" oninput="updateTagPreview(this.value)">
                 <div style="margin-top:9px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px;">
-                  <div style="font-size:9.5px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Preview</div>
-                  <div style="font-size:13.5px;font-weight:700;color:#fff" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">NomePersonagem</span></div>
+                  <div style="font-size:9px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Preview</div>
+                  <div style="font-size:13px;font-weight:700;color:#fff;" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">Personagem</span></div>
                 </div>
               </div>
             </div>
@@ -790,11 +569,11 @@ select.form-input option{background:var(--dark-3);}
 
         <div class="card">
           <div class="card-header"><div class="card-title">🔐 Segurança & Limites</div></div>
-          <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;">
-            <div class="form-group" style="margin-bottom:0"><label class="form-label">Cooldown entre tentativas</label><select class="form-input"><option>30 minutos</option><option selected>1 hora</option><option>3 horas</option><option>24 horas</option></select></div>
-            <div class="form-group" style="margin-bottom:0"><label class="form-label">Máximo de tentativas</label><input class="form-input" type="number" value="3"></div>
-            <div class="form-group" style="margin-bottom:0"><label class="form-label">Anti-Flood</label><select class="form-input"><option selected>Ativado</option><option>Desativado</option></select></div>
-            <div class="form-group" style="margin-bottom:0"><label class="form-label">Idade mínima da conta</label><select class="form-input"><option selected>7+ dias</option><option>30+ dias</option><option>Sem verificação</option></select></div>
+          <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Cooldown</label><select class="form-input" id="cfg-cooldown"><option>30 minutos</option><option selected>1 hora</option><option>3 horas</option><option>24 horas</option></select></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Máx. tentativas</label><input class="form-input" type="number" value="3" id="cfg-max-tentativas"></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Anti-Flood</label><select class="form-input" id="cfg-antiflood"><option selected>Ativado</option><option>Desativado</option></select></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Idade mín. conta</label><select class="form-input" id="cfg-idade"><option selected>7+ dias</option><option>30+ dias</option><option>Sem verificação</option></select></div>
           </div>
         </div>
       </div>
@@ -803,85 +582,69 @@ select.form-input option{background:var(--dark-3);}
   </div><!-- /content -->
 </div><!-- /main -->
 
-<!-- ========== MODALS ========== -->
+<!-- ===== MODALS ===== -->
 
-<!-- Approve Modal -->
+<!-- Modal: Aprovar -->
 <div class="modal-overlay" id="approveModal">
   <div class="modal">
     <div class="modal-title">✅ Aprovar Membro <button class="modal-close" onclick="closeModal('approveModal')">✕</button></div>
     <div class="form-group"><label class="form-label">Membro Discord</label><input class="form-input" type="text" id="approveModalName" readonly></div>
     <div class="form-group">
-      <label class="form-label">Nome do Personagem no Jogo</label>
+      <label class="form-label">Nome do Personagem</label>
       <input class="form-input" type="text" id="approveModalChar" placeholder="Ex: João Pereira" oninput="updateApprovePreview()">
       <div style="margin-top:8px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:8px;padding:10px 12px;">
         <div style="font-size:9px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Nome no Discord após aprovação</div>
-        <div style="font-size:13.5px;font-weight:700;color:#fff" id="approveNamePreview">—</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;" id="approveNamePreview">—</div>
       </div>
     </div>
-    <div class="form-group"><label class="form-label">Cargo a Conceder</label><select class="form-input"><option>@Whitelist</option><option>@Liberado</option><option>@Membro</option></select></div>
+    <div class="form-group"><label class="form-label">Cargo a Conceder</label><input class="form-input" type="text" id="approveModalCargo" placeholder="@Whitelist"></div>
     <div class="form-group"><label class="form-label">Mensagem (opcional)</label><textarea class="form-input" rows="2" placeholder="Parabéns! Você foi aprovado..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('approveModal')">Cancelar</button>
-      <button class="btn-add" onclick="confirmApprove()">✅ Confirmar Aprovação</button>
+      <button class="btn-add" onclick="confirmApprove()">✅ Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- Reject Modal -->
+<!-- Modal: Reprovar -->
 <div class="modal-overlay" id="rejectModal">
   <div class="modal">
     <div class="modal-title" style="color:var(--red)">❌ Reprovar Membro <button class="modal-close" onclick="closeModal('rejectModal')">✕</button></div>
     <div class="form-group"><label class="form-label">Membro</label><input class="form-input" type="text" id="rejectModalName" readonly></div>
-    <div class="form-group"><label class="form-label">Motivo da Reprovação</label>
+    <div class="form-group"><label class="form-label">Motivo</label>
       <select class="form-input" id="rejectReason">
-        <option>Respostas incompletas</option><option>Não conhece as regras</option><option>Respostas copiadas / inválidas</option><option>Comportamento inadequado</option><option>Tentativa de burlar o sistema</option><option>Outro</option>
+        <option>Respostas incompletas</option><option>Não conhece as regras</option><option>Respostas inválidas</option><option>Comportamento inadequado</option><option>Tentativa de burlar o sistema</option><option>Outro</option>
       </select>
     </div>
-    <div class="form-group"><label class="form-label">Observação (opcional)</label><textarea class="form-input" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
-    <div style="background:rgba(255,68,102,0.07);border:1px solid rgba(255,68,102,0.2);border-radius:9px;padding:11px 13px;margin-bottom:16px;font-size:12px;color:var(--text-dim);">⚠️ O membro será notificado no Discord com o motivo da reprovação.</div>
+    <div class="form-group"><label class="form-label">Observação</label><textarea class="form-input" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
+    <div style="background:rgba(255,68,102,0.07);border:1px solid rgba(255,68,102,0.2);border-radius:9px;padding:11px 13px;margin-bottom:16px;font-size:12px;color:var(--text-dim);">⚠️ O membro será notificado no Discord com o motivo.</div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('rejectModal')">Cancelar</button>
-      <button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011)" onclick="confirmReject()">❌ Confirmar Reprovação</button>
+      <button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011);" onclick="confirmReject()">❌ Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- Add Server Modal -->
-<div class="modal-overlay" id="addServerModal">
+<!-- Modal: Adicionar Bot -->
+<div class="modal-overlay" id="addBotModal">
   <div class="modal">
-    <div class="modal-title">🖥️ Adicionar Fenixx ao Servidor <button class="modal-close" onclick="closeModal('addServerModal')">✕</button></div>
-    <div style="text-align:center;padding:20px 0;">
-      <div style="font-size:48px;margin-bottom:14px;filter:drop-shadow(0 0 14px rgba(255,107,0,0.5))">🔥</div>
+    <div class="modal-title">➕ Adicionar Fenixx <button class="modal-close" onclick="closeModal('addBotModal')">✕</button></div>
+    <div style="text-align:center;padding:18px 0;">
+      <div style="font-size:46px;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(255,107,0,0.5));">🔥</div>
       <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Adicione o Fenixx ao seu servidor</div>
-      <div style="font-size:13px;color:var(--text-dim);margin-bottom:22px;line-height:1.6;">Clique em <strong style="color:var(--fire-1)">Adicionar Bot</strong> para ser redirecionado ao Discord e autorizar o Fenixx no servidor selecionado. Após adicionar, o servidor aparecerá com a opção de Gerenciar.</div>
-      <button class="btn-add" style="margin:0 auto;font-size:14px;padding:11px 28px;" onclick="adicionarBot()">🔗 Adicionar Bot ao Discord</button>
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.6;" id="addBotServerName">Você será redirecionado ao Discord para autorizar o bot. Após adicionar, o servidor aparecerá com a opção de Gerenciar.</div>
+      <button class="btn-add" style="margin:0 auto;font-size:14px;padding:11px 28px;" onclick="redirecionarAddBot()">🔗 Autorizar no Discord</button>
     </div>
-    <div class="modal-footer" style="justify-content:center;">
-      <button class="btn-ghost" onclick="closeModal('addServerModal')">Fechar</button>
-    </div>
+    <div class="modal-footer" style="justify-content:center;"><button class="btn-ghost" onclick="closeModal('addBotModal')">Fechar</button></div>
   </div>
 </div>
 
-<!-- Command Modal -->
-<div class="modal-overlay" id="cmdModal">
-  <div class="modal">
-    <div class="modal-title">⚡ Novo Comando Personalizado <button class="modal-close" onclick="closeModal('cmdModal')">✕</button></div>
-    <div class="form-group"><label class="form-label">Nome do Comando</label><input class="form-input" type="text" placeholder="Ex: regras, ban, status"></div>
-    <div class="form-group"><label class="form-label">O que o bot vai fazer</label><textarea class="form-input" rows="3" placeholder="Ex: Exibe as regras do servidor em um embed colorido..."></textarea></div>
-    <div class="form-group"><label class="form-label">Permissão necessária</label><select class="form-input"><option>Todos os membros</option><option>Staff</option><option>Moderador</option><option>Admin</option></select></div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('cmdModal')">Cancelar</button>
-      <button class="btn-add" onclick="closeModal('cmdModal');showToast('✅ Comando criado com sucesso!','green')">💾 Salvar Comando</button>
-    </div>
-  </div>
-</div>
-
-<!-- Role Modal -->
+<!-- Modal: Novo Cargo -->
 <div class="modal-overlay" id="roleModal">
   <div class="modal">
     <div class="modal-title">🛡️ Novo Cargo <button class="modal-close" onclick="closeModal('roleModal')">✕</button></div>
     <div class="form-group"><label class="form-label">Cargo do Discord</label><input class="form-input" type="text" placeholder="Ex: @Moderador"></div>
-    <div class="form-group"><label class="form-label">Nível de Permissão</label><select class="form-input"><option>Aprovador (apenas aprovar)</option><option>Moderador (aprovar e reprovar)</option><option>Admin (acesso total)</option></select></div>
+    <div class="form-group"><label class="form-label">Nível de Permissão</label><select class="form-input"><option>Aprovador</option><option>Moderador</option><option>Admin</option></select></div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('roleModal')">Cancelar</button>
       <button class="btn-add" onclick="closeModal('roleModal');showToast('✅ Cargo adicionado!','green')">💾 Salvar</button>
@@ -890,216 +653,386 @@ select.form-input option{background:var(--dark-3);}
 </div>
 
 <script>
-// ========== STATE ==========
-const userPages = ['dashboard','servidores','loja','notificacoes','personalizacao','conta'];
-const serverPagesList = ['overview','whitelist','comandos','permissoes','configwl'];
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+const CLIENT_ID_BOT = "1494377772661870622"; // mesmo do app.py
+const ADD_BOT_URL = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID_BOT}&permissions=8&scope=bot%20applications.commands`;
+
+let currentUser = null;
+let guilds = [];
+let botGuildIds = new Set();
+let activeGuild = null;
+let currentApproveRow = null;
+
+const userPageIds  = ['home','servidores','loja','notificacoes','personalizacao','conta'];
+const serverPageIds = ['overview','whitelist','comandos','permissoes','configwl'];
+
 const pageTitles = {
-  dashboard:'🏠 Home',servidores:'🖥️ Seus Servidores',loja:'🛒 Loja Fenixx',
-  notificacoes:'🔔 Notificações',personalizacao:'🎨 Personalização',conta:'👤 Minha Conta',
-  overview:'📊 Visão Geral',whitelist:'✅ Whitelist',comandos:'⚡ Comandos',
-  permissoes:'🛡️ Permissões',configwl:'⚙️ Configuração WL'
+  home:'🏠 Home', servidores:'🖥️ Seus Servidores', loja:'🛒 Loja Fenixx',
+  notificacoes:'🔔 Notificações', personalizacao:'🎨 Personalização', conta:'👤 Conta',
+  overview:'📊 Visão Geral', whitelist:'✅ Whitelist', comandos:'⚡ Comandos',
+  permissoes:'🛡️ Permissões', configwl:'⚙️ Configuração WL'
 };
-let currentActionUser = null;
-let activeServer = null;
 
-// Mock servidores do usuário
-const mockServers = [
-  {id:'7391827364', name:'FenixxRP', icon:'🔥', members:248, pending:12, hasBot:true, online:true},
-  {id:'8829301742', name:'CityLife RP', icon:'🌆', members:89, pending:3, hasBot:true, online:true},
-  {id:'3310948271', name:'NightCity', icon:'🌙', members:12, pending:0, hasBot:false, online:false},
-  {id:'5504829103', name:'Meu Servidor', icon:'🎮', members:5, pending:0, hasBot:false, online:false},
-];
+// ============================================================
+// INIT — busca usuário e guilds da API real
+// ============================================================
+async function init() {
+  try {
+    // 1. Buscar usuário
+    const userRes = await fetch('/api/user');
+    currentUser = await userRes.json();
+    renderUser(currentUser);
 
-// ========== NAVEGAÇÃO USER ==========
-function showUserPage(id) {
-  document.getElementById('userPages').style.display = 'block';
-  document.getElementById('serverPages').style.display = 'none';
-  document.getElementById('userNav').style.display = 'block';
-  document.getElementById('serverNav').style.display = 'none';
-  document.getElementById('topbarServer').style.display = 'none';
+    // 2. Buscar guilds do usuário
+    const guildsRes = await fetch('/api/guilds');
+    guilds = await guildsRes.json();
 
-  userPages.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
-  document.getElementById('page-'+id)?.classList.add('active');
+    // 3. Buscar onde o bot está (rota que vamos adicionar no Flask)
+    try {
+      const botRes = await fetch('/api/bot/guilds');
+      const botGuilds = await botRes.json();
+      botGuildIds = new Set(botGuilds.map(g => String(g.id || g)));
+    } catch(e) {
+      // rota ainda não existe, ignora silenciosamente
+      botGuildIds = new Set();
+    }
 
-  document.querySelectorAll('#userNav .nav-link').forEach(l => l.classList.remove('active'));
-  document.querySelectorAll('#userNav .nav-link').forEach(l => {
-    if(l.getAttribute('onclick')?.includes("'"+id+"'")) l.classList.add('active');
-  });
+    // 4. Atualizar stats da home
+    const comBot = guilds.filter(g => botGuildIds.has(String(g.id))).length;
+    document.getElementById('statServidores').textContent = guilds.length;
+    document.getElementById('statComBot').textContent = comBot;
+    document.getElementById('statSemBot').textContent = guilds.length - comBot;
+    document.getElementById('statUser').textContent = currentUser.global_name || currentUser.username || '—';
 
-  document.getElementById('page-title').textContent = pageTitles[id] || id;
-  document.getElementById('notifPanel').classList.remove('show');
-
-  if(id === 'servidores') renderServerList();
+  } catch(e) {
+    console.error('Erro ao inicializar:', e);
+  }
 }
 
-// ========== ENTRAR NO SERVIDOR ==========
-function entrarServidor(serverName, icon) {
-  activeServer = serverName;
-  document.getElementById('userPages').style.display = 'none';
-  document.getElementById('serverPages').style.display = 'block';
+// ============================================================
+// RENDERIZAR USUÁRIO NA SIDEBAR
+// ============================================================
+function renderUser(u) {
+  if (!u || !u.id) return;
+
+  const name = u.global_name || u.username || 'Usuário';
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarRole').textContent = 'Fenixx';
+  document.getElementById('contaUsername').textContent = name;
+  document.getElementById('contaUsernameInput').value = u.username || '';
+  document.getElementById('contaId').value = u.id || '';
+
+  // Avatar
+  const avatarUrl = u.avatar
+    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`
+    : null;
+
+  if (avatarUrl) {
+    document.getElementById('sidebarAvatar').innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+    document.getElementById('contaAvatar').innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    const initials = name.substring(0,2).toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = initials;
+    document.getElementById('contaAvatar').textContent = initials;
+  }
+}
+
+// ============================================================
+// RENDERIZAR LISTA DE SERVIDORES
+// ============================================================
+function renderServerList() {
+  const container = document.getElementById('serverListContainer');
+
+  if (!guilds.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🖥️</div><p>Nenhum servidor encontrado.<br>Você precisa ser administrador ou dono de um servidor.</p></div>`;
+    return;
+  }
+
+  let html = `<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">${guilds.length} servidor(es) onde você é administrador ou dono.</div><div class="server-list">`;
+
+  guilds.forEach(guild => {
+    const hasBot = botGuildIds.has(String(guild.id));
+    const iconUrl = guild.icon
+      ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`
+      : null;
+    const iconHtml = iconUrl
+      ? `<img src="${iconUrl}" alt="${guild.name}">`
+      : getInitials(guild.name);
+
+    html += `
+      <div class="server-item">
+        <div class="srv-icon">${iconHtml}</div>
+        <div style="flex:1;overflow:hidden;">
+          <div class="srv-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(guild.name)}</div>
+          <div class="srv-count">ID: ${guild.id} ${hasBot ? '• Bot ativo' : '• Bot não adicionado'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${hasBot
+            ? `<span class="srv-status online">Online</span><button class="srv-btn manage" onclick="entrarServidor('${guild.id}','${escHtml(guild.name)}','${iconUrl||''}')">⚙️ Gerenciar</button>`
+            : `<span class="srv-status no-bot">Sem bot</span><button class="srv-btn add-bot" onclick="abrirAddBot('${escHtml(guild.name)}','${guild.id}')">➕ Adicionar</button>`
+          }
+        </div>
+      </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ============================================================
+// ENTRAR NO SERVIDOR
+// ============================================================
+async function entrarServidor(guildId, guildName, iconUrl) {
+  activeGuild = { id: guildId, name: guildName, icon: iconUrl };
+
+  // Atualiza sidebar do servidor
+  document.getElementById('srvNavName').textContent = guildName;
+  const iconHtml = iconUrl
+    ? `<img src="${iconUrl}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;"> `
+    : '🔥 ';
+  document.getElementById('srvNavIcon').innerHTML = iconHtml;
+
+  // Topbar chip
+  document.getElementById('topServerName').textContent = guildName;
+  document.getElementById('topServerChip').style.display = 'flex';
+
+  // Troca navs
   document.getElementById('userNav').style.display = 'none';
   document.getElementById('serverNav').style.display = 'block';
+  document.getElementById('userPages').style.display = 'none';
+  document.getElementById('serverPages').style.display = 'block';
 
-  document.getElementById('serverNavTitle').innerHTML = icon + ' ' + serverName;
-  document.getElementById('topbarServerName').textContent = serverName;
-  document.getElementById('topbarServer').style.display = 'flex';
+  // Texto visão geral
+  document.getElementById('overviewServerName').textContent = guildName;
+  document.getElementById('actServerName').textContent = guildName;
 
   showServerPage('overview');
+
+  // Carrega config salva
+  await carregarConfig(guildId);
 }
 
 function voltarPainel() {
-  activeServer = null;
+  activeGuild = null;
+  document.getElementById('userNav').style.display = 'block';
+  document.getElementById('serverNav').style.display = 'none';
+  document.getElementById('userPages').style.display = 'block';
+  document.getElementById('serverPages').style.display = 'none';
+  document.getElementById('topServerChip').style.display = 'none';
   showUserPage('servidores');
 }
 
-// ========== NAVEGAÇÃO SERVER ==========
-function showServerPage(id) {
-  serverPagesList.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
+// ============================================================
+// CARREGAR / SALVAR CONFIG
+// ============================================================
+async function carregarConfig(guildId) {
+  try {
+    const res = await fetch(`/api/config/${guildId}`);
+    const data = await res.json();
+
+    setVal('cfg-painel', data.painel);
+    setVal('cfg-aceitos', data.aceitos);
+    setVal('cfg-recusados', data.recusados);
+    setVal('cfg-categoria', data.categoria);
+    setVal('cfg-cargo', data.cargo);
+    setVal('cfg-tag', data.tag);
+
+    if (data.tag) updateTagPreview(data.tag);
+  } catch(e) {
+    console.error('Erro ao carregar config:', e);
+  }
+}
+
+async function salvarConfig() {
+  if (!activeGuild) return;
+
+  const payload = {
+    painel:    getVal('cfg-painel'),
+    aceitos:   getVal('cfg-aceitos'),
+    recusados: getVal('cfg-recusados'),
+    categoria: getVal('cfg-categoria'),
+    cargo:     getVal('cfg-cargo'),
+    tag:       getVal('cfg-tag'),
+    cooldown:  getVal('cfg-cooldown'),
+    max_tentativas: getVal('cfg-max-tentativas'),
+    antiflood: getVal('cfg-antiflood'),
+    idade_min: getVal('cfg-idade'),
+  };
+
+  try {
+    const res = await fetch(`/api/config/${activeGuild.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json();
+    if (out.status === 'ok') {
+      showToast('💾 Configurações salvas e aplicadas ao bot!', 'green');
+    } else {
+      showToast('❌ Erro ao salvar configurações.', 'red');
+    }
+  } catch(e) {
+    showToast('❌ Erro de conexão com o servidor.', 'red');
+  }
+}
+
+// ============================================================
+// ADICIONAR BOT
+// ============================================================
+function abrirAddBot(name, guildId) {
+  document.getElementById('addBotServerName').textContent = `Servidor: ${name}\n\nVocê será redirecionado ao Discord para autorizar o Fenixx.`;
+  openModal('addBotModal');
+  // guarda guild para pré-selecionar no Discord
+  window._addBotGuildId = guildId;
+}
+
+function redirecionarAddBot() {
+  const guildParam = window._addBotGuildId ? `&guild_id=${window._addBotGuildId}` : '';
+  window.open(ADD_BOT_URL + guildParam, '_blank');
+  closeModal('addBotModal');
+  showToast('🔗 Abrindo Discord para autorização...', 'green');
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+function showUserPage(id) {
+  userPageIds.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
   document.getElementById('page-'+id)?.classList.add('active');
 
-  document.querySelectorAll('#serverNav .nav-link').forEach(l => l.classList.remove('active'));
-  document.querySelectorAll('#serverNav .nav-link').forEach(l => {
-    if(l.getAttribute('onclick')?.includes("'"+id+"'")) l.classList.add('active');
+  document.querySelectorAll('#userNav .nav-link').forEach(l => {
+    l.classList.toggle('active', l.getAttribute('onclick')?.includes("'"+id+"'"));
   });
 
-  document.getElementById('page-title').textContent = (activeServer || '') + ' — ' + (pageTitles[id] || id);
+  document.getElementById('pageTitle').textContent = pageTitles[id] || id;
+  document.getElementById('notifPanel').classList.remove('show');
+
+  if (id === 'servidores') renderServerList();
+}
+
+function showServerPage(id) {
+  serverPageIds.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
+  document.getElementById('page-'+id)?.classList.add('active');
+
+  document.querySelectorAll('#serverNav .nav-link').forEach(l => {
+    l.classList.toggle('active', l.getAttribute('onclick')?.includes("'"+id+"'"));
+  });
+
+  const serverTitle = activeGuild ? activeGuild.name + ' — ' : '';
+  document.getElementById('pageTitle').textContent = serverTitle + (pageTitles[id] || id);
   document.getElementById('notifPanel').classList.remove('show');
 }
 
-// ========== RENDER SERVER LIST ==========
-function renderServerList() {
-  const container = document.getElementById('serverListUser');
-  container.innerHTML = '';
-  mockServers.forEach(srv => {
-    const el = document.createElement('div');
-    el.className = 'server-item';
-    el.innerHTML = `
-      <div class="srv-icon" style="${srv.hasBot ? '' : 'background:var(--dark-3);border:1px solid var(--border-soft);'}">${srv.icon}</div>
-      <div>
-        <div class="srv-name">${srv.name}</div>
-        <div class="srv-count">${srv.hasBot ? srv.members+' membros • '+srv.pending+' pendentes' : 'Bot não adicionado'}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
-        ${srv.hasBot ? `<span class="srv-status ${srv.online?'online':'offline'}">${srv.online?'Online':'Offline'}</span>` : ''}
-        <button class="srv-btn ${srv.hasBot?'manage':'add'}" onclick="${srv.hasBot ? "entrarServidor('"+srv.name+"','"+srv.icon+"')" : "abrirAddModal('"+srv.name+"')"}">${srv.hasBot ? '⚙️ Gerenciar' : '➕ Adicionar'}</button>
-      </div>
-    `;
-    container.appendChild(el);
-  });
-}
-
-function abrirAddModal(name) {
-  openModal('addServerModal');
-}
-
-function adicionarBot() {
-  // Aqui redirecionaria para URL de autorização do Discord
-  showToast('🔗 Redirecionando para o Discord para adicionar o bot...', 'green');
-  closeModal('addServerModal');
-  // window.open('https://discord.com/oauth2/authorize?client_id=SEU_CLIENT_ID&scope=bot&permissions=...', '_blank');
-}
-
-// ========== WL TABS ==========
+// ============================================================
+// WL TABS
+// ============================================================
 function showWLTab(tab, el) {
   ['aprovados','pendentes','reprovados'].forEach(t => {
     const el2 = document.getElementById('wl-'+t);
-    if(el2) el2.style.display = 'none';
+    if (el2) el2.style.display = t === tab ? 'block' : 'none';
   });
-  document.getElementById('wl-'+tab).style.display = 'block';
-
-  document.querySelectorAll('#page-whitelist [onclick^="showWLTab"]').forEach(t => {
-    t.style.color = 'var(--text-dim)';
-    t.style.borderBottomColor = 'transparent';
-  });
-  el.style.color = 'var(--fire-1)';
-  el.style.borderBottomColor = 'var(--fire-1)';
+  document.querySelectorAll('.wl-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
 }
 
-// ========== MODALS ==========
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function toggleNotif() { document.getElementById('notifPanel').classList.toggle('show'); }
-function setFilter(btn) { btn.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active-filter')); btn.classList.add('active-filter'); }
-
-// ========== APPROVE/REJECT ==========
+// ============================================================
+// APROVAÇÃO / REPROVAÇÃO
+// ============================================================
 function quickApprove(rowId, name) {
-  currentActionUser = rowId;
+  currentApproveRow = rowId;
   document.getElementById('approveModalName').value = name;
   document.getElementById('approveModalChar').value = '';
-  document.getElementById('approveNamePreview').innerHTML = name + ' | <span style="color:var(--fire-1)">Nome do Personagem</span>';
+  const cargo = getVal('cfg-cargo') || '@Whitelist';
+  document.getElementById('approveModalCargo').value = cargo;
+  updateApprovePreview();
   openModal('approveModal');
 }
 
 function quickReject(rowId, name) {
-  currentActionUser = rowId;
+  currentApproveRow = rowId;
   document.getElementById('rejectModalName').value = name;
   openModal('rejectModal');
 }
 
 function updateApprovePreview() {
   const name = document.getElementById('approveModalName').value;
-  const char = document.getElementById('approveModalChar').value || 'Nome do Personagem';
-  document.getElementById('approveNamePreview').innerHTML = name + ' | <span style="color:var(--fire-1)">'+char+'</span>';
+  const char = document.getElementById('approveModalChar').value || 'NomePersonagem';
+  document.getElementById('approveNamePreview').innerHTML =
+    `${escHtml(name)} | <span style="color:var(--fire-1)">${escHtml(char)}</span>`;
 }
 
 function confirmApprove() {
   const name = document.getElementById('approveModalName').value;
   const char = document.getElementById('approveModalChar').value || '—';
   closeModal('approveModal');
-  showToast('✅ '+name+' aprovado! Nome no Discord: '+name+' | '+char, 'green');
+  showToast(`✅ ${name} aprovado! Discord: ${name} | ${char}`, 'green');
 }
 
 function confirmReject() {
-  const name = document.getElementById('rejectModalName').value;
+  const name  = document.getElementById('rejectModalName').value;
   const motivo = document.getElementById('rejectReason').value;
   closeModal('rejectModal');
-  showToast('❌ '+name+' reprovado — '+motivo, 'red');
+  showToast(`❌ ${name} reprovado — ${motivo}`, 'red');
 }
 
-// ========== TAG PREVIEW ==========
+// ============================================================
+// TAG PREVIEW
+// ============================================================
 function updateTagPreview(val) {
   const el = document.getElementById('tagPreview');
-  if(el) el.innerHTML = 'DiscordUser | <span style="color:var(--fire-1)">'+(val||'NomePersonagem')+'</span>';
+  if (el) el.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${escHtml(val || 'Personagem')}</span>`;
 }
 
-// ========== SALVAR CONFIG ==========
-async function salvarConfig() {
-  const payload = {
-    painel: document.getElementById('cfg-painel')?.value || '',
-    categoria: document.getElementById('cfg-categoria')?.value || '',
-    aceitos: document.getElementById('cfg-aceitos')?.value || '',
-    recusados: document.getElementById('cfg-recusados')?.value || '',
-    cargo: document.getElementById('cfg-cargo')?.value || '',
-    tag: document.getElementById('cfg-tag')?.value || ''
-  };
-  // await fetch(`/api/config/${guildId}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-  showToast('💾 Configurações salvas e aplicadas ao bot!', 'green');
+// ============================================================
+// HELPERS
+// ============================================================
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined && val !== null) el.value = val;
+}
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function getInitials(name) {
+  return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() || '??';
 }
 
-// ========== TOAST ==========
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function toggleNotif()  { document.getElementById('notifPanel').classList.toggle('show'); }
+function setFilter(btn) {
+  btn.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+}
+
 function showToast(msg, color) {
   const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:26px;right:26px;z-index:9999;background:var(--card);border:1px solid ${color==='green'?'rgba(0,229,122,0.3)':'rgba(255,68,102,0.3)'};border-radius:11px;padding:13px 18px;font-size:13px;font-weight:600;color:${color==='green'?'var(--green)':'var(--red)'};box-shadow:0 8px 28px rgba(0,0,0,0.4);animation:toastIn .28s ease;max-width:340px;line-height:1.4;`;
-  t.innerHTML = msg;
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card);border:1px solid ${color==='green'?'rgba(0,229,122,0.35)':'rgba(255,68,102,0.35)'};border-radius:12px;padding:13px 18px;font-size:13px;font-weight:600;color:${color==='green'?'var(--green)':'var(--red)'};box-shadow:0 8px 28px rgba(0,0,0,0.45);animation:toastIn .25s ease;max-width:360px;line-height:1.4;`;
+  t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3500);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3800);
 }
 
-// ========== CLOSE OUTSIDE ==========
-document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');});
+// Fecha modal ao clicar fora
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('show'); });
 });
-document.addEventListener('click',e=>{
-  const panel = document.getElementById('notifPanel');
-  if(!panel.contains(e.target)&&!e.target.closest('.icon-btn')) panel.classList.remove('show');
+document.addEventListener('click', e => {
+  const p = document.getElementById('notifPanel');
+  if (!p.contains(e.target) && !e.target.closest('.icon-btn')) p.classList.remove('show');
 });
 
-// ========== INIT ==========
-showUserPage('dashboard');
+// ============================================================
+// START
+// ============================================================
+init();
+showUserPage('home');
 </script>
-
-<style>
-@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-</style>
 </body>
 </html>
