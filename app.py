@@ -9,7 +9,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "fenixx_secret")
 CLIENT_ID = "1494377772661870622"
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
-REDIRECT_URI = "https://fenixpro-mgzoeab6h-carlosalexandresouzasantos852-3381s-projetos.vercel.app/callback"
+REDIRECT_URI = "https://fenixpro.vercel.app/callback"
 
 if not CLIENT_SECRET:
     raise RuntimeError("DISCORD_CLIENT_SECRET não encontrado nas variáveis do Railway")
