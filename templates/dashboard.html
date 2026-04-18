@@ -679,7 +679,7 @@ select.form-input option{background:var(--dark-3);}
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
-const CLIENT_ID_BOT = "1494377772661870622"; // mesmo do app.py
+const CLIENT_ID_BOT = "1494377772661870622";
 const ADD_BOT_URL = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID_BOT}&permissions=8&scope=bot%20applications.commands`;
 
 let currentUser = null;
@@ -688,92 +688,260 @@ let botGuildIds = new Set();
 let activeGuild = null;
 let currentApproveRow = null;
 
-const userPageIds  = ['home','servidores','loja','notificacoes','personalizacao','conta'];
+const userPageIds = ['home','servidores','loja','notificacoes','personalizacao','conta'];
 const serverPageIds = ['overview','whitelist','comandos','permissoes','configwl'];
 
 const pageTitles = {
-  home:'🏠 Home', servidores:'🖥️ Seus Servidores', loja:'🛒 Loja Fenixx',
-  notificacoes:'🔔 Notificações', personalizacao:'🎨 Personalização', conta:'👤 Conta',
-  overview:'📊 Visão Geral', whitelist:'✅ Whitelist', comandos:'⚡ Comandos',
-  permissoes:'🛡️ Permissões', configwl:'⚙️ Configuração WL'
+  home: '🏠 Home',
+  servidores: '🖥️ Seus Servidores',
+  loja: '🛒 Loja Fenixx',
+  notificacoes: '🔔 Notificações',
+  personalizacao: '🎨 Personalização',
+  conta: '👤 Conta',
+  overview: '📊 Visão Geral',
+  whitelist: '✅ Whitelist',
+  comandos: '⚡ Comandos',
+  permissoes: '🛡️ Permissões',
+  configwl: '⚙️ Configuração WL'
 };
 
 // ============================================================
-// INIT — busca usuário e guilds da API real
+// HELPERS
 // ============================================================
-async function init() {
-  try {
-    // 1. Buscar usuário
-    const userRes = await fetch('/api/user');
-    currentUser = await userRes.json();
-    renderUser(currentUser);
+function escHtml(str) {
+  return String(str || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-    // 2. Buscar guilds do usuário
-    const guildsRes = await fetch('/api/guilds');
-    guilds = await guildsRes.json();
+function getInitials(name) {
+  return String(name || "??")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(w => w[0])
+    .join("")
+    .toUpperCase() || "??";
+}
 
-    // 3. Buscar onde o bot está (rota que vamos adicionar no Flask)
-    try {
-      const botRes = await fetch('/api/bot/guilds');
-      const botGuilds = await botRes.json();
-      botGuildIds = new Set(botGuilds.map(g => String(g.id || g)));
-    } catch(e) {
-      // rota ainda não existe, ignora silenciosamente
-      botGuildIds = new Set();
-    }
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : "";
+}
 
-    // 4. Atualizar stats da home
-    const comBot = guilds.filter(g => botGuildIds.has(String(g.id))).length;
-    document.getElementById('statServidores').textContent = guilds.length;
-    document.getElementById('statComBot').textContent = comBot;
-    document.getElementById('statSemBot').textContent = guilds.length - comBot;
-    document.getElementById('statUser').textContent = currentUser.global_name || currentUser.username || '—';
-
-  } catch(e) {
-    console.error('Erro ao inicializar:', e);
+function setVal(id, value) {
+  const el = document.getElementById(id);
+  if (el && value !== undefined && value !== null) {
+    el.value = String(value);
   }
 }
 
+function openModal(id) {
+  document.getElementById(id)?.classList.add("show");
+}
+
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove("show");
+}
+
+function toggleNotif() {
+  document.getElementById("notifPanel")?.classList.toggle("show");
+}
+
+function showToast(msg, color = "green") {
+  const toast = document.createElement("div");
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: var(--card);
+    border: 1px solid ${color === 'green' ? 'rgba(0,229,122,0.35)' : 'rgba(255,68,102,0.35)'};
+    border-radius: 12px;
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: ${color === 'green' ? 'var(--green)' : 'var(--red)'};
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    max-width: 360px;
+    line-height: 1.4;
+  `;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity .3s";
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+function updateTagPreview(valor) {
+  const preview = document.getElementById("tagPreview");
+  if (!preview) return;
+
+  preview.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${escHtml(valor || "NomePersonagem")}</span>`;
+}
+
+function updateApprovePreview() {
+  const name = getVal("approveModalName");
+  const char = getVal("approveModalChar") || "NomePersonagem";
+  const preview = document.getElementById("approveNamePreview");
+  if (!preview) return;
+
+  preview.innerHTML = `${escHtml(name)} | <span style="color:var(--fire-1)">${escHtml(char)}</span>`;
+}
+
 // ============================================================
-// RENDERIZAR USUÁRIO NA SIDEBAR
+// USER / CONTA
 // ============================================================
 function renderUser(u) {
   if (!u || !u.id) return;
 
-  const name = u.global_name || u.username || 'Usuário';
-  document.getElementById('sidebarName').textContent = name;
-  document.getElementById('sidebarRole').textContent = 'Fenixx';
-  document.getElementById('contaUsername').textContent = name;
-  document.getElementById('contaUsernameInput').value = u.username || '';
-  document.getElementById('contaId').value = u.id || '';
+  const name = u.global_name || u.username || "Usuário";
 
-  // Avatar
+  const sidebarName = document.getElementById("sidebarName");
+  const sidebarRole = document.getElementById("sidebarRole");
+  const contaUsername = document.getElementById("contaUsername");
+  const contaUsernameInput = document.getElementById("contaUsernameInput");
+  const contaId = document.getElementById("contaId");
+
+  if (sidebarName) sidebarName.textContent = name;
+  if (sidebarRole) sidebarRole.textContent = "Fenixx";
+  if (contaUsername) contaUsername.textContent = name;
+  if (contaUsernameInput) contaUsernameInput.value = u.username || "";
+  if (contaId) contaId.value = u.id || "";
+
   const avatarUrl = u.avatar
     ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`
     : null;
 
+  const sidebarAvatar = document.getElementById("sidebarAvatar");
+  const contaAvatar = document.getElementById("contaAvatar");
+
   if (avatarUrl) {
-    document.getElementById('sidebarAvatar').innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
-    document.getElementById('contaAvatar').innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+    if (contaAvatar) {
+      contaAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
   } else {
-    const initials = name.substring(0,2).toUpperCase();
-    document.getElementById('sidebarAvatar').textContent = initials;
-    document.getElementById('contaAvatar').textContent = initials;
+    const initials = getInitials(name);
+    if (sidebarAvatar) sidebarAvatar.textContent = initials;
+    if (contaAvatar) contaAvatar.textContent = initials;
   }
 }
 
 // ============================================================
-// RENDERIZAR LISTA DE SERVIDORES
+// INIT
+// ============================================================
+async function init() {
+  try {
+    const userRes = await fetch("/api/user");
+    currentUser = await userRes.json();
+    renderUser(currentUser);
+
+    const guildsRes = await fetch("/api/guilds");
+    guilds = await guildsRes.json();
+
+    try {
+      const botRes = await fetch("/api/bot/guilds");
+      const botGuilds = await botRes.json();
+      botGuildIds = new Set((botGuilds || []).map(g => String(g.id || g)));
+    } catch (e) {
+      botGuildIds = new Set();
+    }
+
+    const comBot = guilds.filter(g => botGuildIds.has(String(g.id))).length;
+
+    const statServidores = document.getElementById("statServidores");
+    const statComBot = document.getElementById("statComBot");
+    const statSemBot = document.getElementById("statSemBot");
+    const statUser = document.getElementById("statUser");
+
+    if (statServidores) statServidores.textContent = guilds.length;
+    if (statComBot) statComBot.textContent = comBot;
+    if (statSemBot) statSemBot.textContent = guilds.length - comBot;
+    if (statUser) statUser.textContent = currentUser?.global_name || currentUser?.username || "—";
+  } catch (e) {
+    console.error("Erro ao inicializar:", e);
+    showToast("❌ Erro ao carregar dados iniciais.", "red");
+  }
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+function showUserPage(id) {
+  userPageIds.forEach(p => document.getElementById(`page-${p}`)?.classList.remove("active"));
+  document.getElementById(`page-${id}`)?.classList.add("active");
+
+  document.querySelectorAll("#userNav .nav-link").forEach(link => {
+    link.classList.toggle("active", link.getAttribute("onclick")?.includes(`'${id}'`));
+  });
+
+  const pageTitle = document.getElementById("pageTitle");
+  if (pageTitle) pageTitle.textContent = pageTitles[id] || id;
+
+  document.getElementById("notifPanel")?.classList.remove("show");
+
+  if (id === "servidores") {
+    renderServerList();
+  }
+}
+
+function showServerPage(id) {
+  serverPageIds.forEach(p => document.getElementById(`page-${p}`)?.classList.remove("active"));
+  document.getElementById(`page-${id}`)?.classList.add("active");
+
+  document.querySelectorAll("#serverNav .nav-link").forEach(link => {
+    link.classList.toggle("active", link.getAttribute("onclick")?.includes(`'${id}'`));
+  });
+
+  const pageTitle = document.getElementById("pageTitle");
+  const serverTitle = activeGuild ? `${activeGuild.name} — ` : "";
+  if (pageTitle) pageTitle.textContent = serverTitle + (pageTitles[id] || id);
+
+  document.getElementById("notifPanel")?.classList.remove("show");
+}
+
+function voltarPainel() {
+  activeGuild = null;
+
+  document.getElementById("userNav").style.display = "block";
+  document.getElementById("serverNav").style.display = "none";
+  document.getElementById("userPages").style.display = "block";
+  document.getElementById("serverPages").style.display = "none";
+  document.getElementById("topServerChip").style.display = "none";
+
+  showUserPage("servidores");
+}
+
+// ============================================================
+// SERVIDORES
 // ============================================================
 function renderServerList() {
-  const container = document.getElementById('serverListContainer');
+  const container = document.getElementById("serverListContainer");
+  if (!container) return;
 
   if (!guilds.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🖥️</div><p>Nenhum servidor encontrado.<br>Você precisa ser administrador ou dono de um servidor.</p></div>`;
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🖥️</div>
+        <p>Nenhum servidor encontrado.<br>Você precisa ser administrador ou dono de um servidor.</p>
+      </div>
+    `;
     return;
   }
 
-  let html = `<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">${guilds.length} servidor(es) onde você é administrador ou dono.</div><div class="server-list">`;
+  let html = `
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">
+      ${guilds.length} servidor(es) onde você é administrador ou dono.
+    </div>
+    <div class="server-list">
+  `;
 
   guilds.forEach(guild => {
     const hasBot = botGuildIds.has(String(guild.id));
@@ -781,485 +949,259 @@ function renderServerList() {
       ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`
       : null;
     const iconHtml = iconUrl
-      ? `<img src="${iconUrl}" alt="${guild.name}">`
+      ? `<img src="${iconUrl}" alt="${escHtml(guild.name)}">`
       : getInitials(guild.name);
 
     html += `
       <div class="server-item">
         <div class="srv-icon">${iconHtml}</div>
         <div style="flex:1;overflow:hidden;">
-          <div class="srv-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(guild.name)}</div>
-          <div class="srv-count">ID: ${guild.id} ${hasBot ? '• Bot ativo' : '• Bot não adicionado'}</div>
+          <div class="srv-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            ${escHtml(guild.name)}
+          </div>
+          <div class="srv-count">
+            ID: ${guild.id} ${hasBot ? "• Bot ativo" : "• Bot não adicionado"}
+          </div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-          ${hasBot
-            ? `<span class="srv-status online">Online</span><button class="srv-btn manage" onclick="entrarServidor('${guild.id}','${escHtml(guild.name)}','${iconUrl||''}')">⚙️ Gerenciar</button>`
-            : `<span class="srv-status no-bot">Sem bot</span><button class="srv-btn add-bot" onclick="abrirAddBot('${escHtml(guild.name)}','${guild.id}')">➕ Adicionar</button>`
+          ${
+            hasBot
+              ? `<span class="srv-status online">Online</span>
+                 <button class="srv-btn manage" onclick='entrarServidor(${JSON.stringify(guild)})'>⚙️ Gerenciar</button>`
+              : `<span class="srv-status no-bot">Sem bot</span>
+                 <button class="srv-btn add-bot" onclick='abrirAddBot(${JSON.stringify(guild.name)}, ${JSON.stringify(guild.id)})'>➕ Adicionar</button>`
           }
         </div>
-      </div>`;
+      </div>
+    `;
   });
 
-  html += '</div>';
+  html += `</div>`;
   container.innerHTML = html;
 }
 
-// ============================================================
-// ENTRAR NO SERVIDOR
-// ============================================================
-async function entrarServidor(guildId, guildName, iconUrl) {
-  activeGuild = { id: guildId, name: guildName, icon: iconUrl };
+async function entrarServidor(guild) {
+  activeGuild = guild;
 
-  // Atualiza sidebar do servidor
-  document.getElementById('srvNavName').textContent = guildName;
-  const iconHtml = iconUrl
-    ? `<img src="${iconUrl}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;"> `
-    : '🔥 ';
-  document.getElementById('srvNavIcon').innerHTML = iconHtml;
+  const srvNavName = document.getElementById("srvNavName");
+  const srvNavIcon = document.getElementById("srvNavIcon");
+  const topServerName = document.getElementById("topServerName");
+  const topServerChip = document.getElementById("topServerChip");
+  const overviewServerName = document.getElementById("overviewServerName");
+  const actServerName = document.getElementById("actServerName");
 
-  // Topbar chip
-  document.getElementById('topServerName').textContent = guildName;
-  document.getElementById('topServerChip').style.display = 'flex';
+  if (srvNavName) srvNavName.textContent = guild.name;
 
-  // Troca navs
-  document.getElementById('userNav').style.display = 'none';
-  document.getElementById('serverNav').style.display = 'block';
-  document.getElementById('userPages').style.display = 'none';
-  document.getElementById('serverPages').style.display = 'block';
-
-  // Texto visão geral
-  document.getElementById('overviewServerName').textContent = guildName;
-  document.getElementById('actServerName').textContent = guildName;
-
-  showServerPage('overview');
-
-  // Carrega config salva
-  await carregarConfig(guildId);
-}
-
-function voltarPainel() {
-  activeGuild = null;
-  document.getElementById('userNav').style.display = 'block';
-  document.getElementById('serverNav').style.display = 'none';
-  document.getElementById('userPages').style.display = 'block';
-  document.getElementById('serverPages').style.display = 'none';
-  document.getElementById('topServerChip').style.display = 'none';
-  showUserPage('servidores');
-}
-
-// ============================================================
-// CARREGAR / SALVAR CONFIG
-// ============================================================
-async function carregarTudo(guildId) {
-    const canais = await fetch(`/api/guild/${guildId}/channels`).then(r => r.json());
-    const cargos = await fetch(`/api/guild/${guildId}/roles`).then(r => r.json());
-
-    preencher("cfg-painel", canais.text_channels);
-    preencher("cfg-aceitos", canais.text_channels);
-    preencher("cfg-recusados", canais.text_channels);
-    preencher("cfg-categoria", canais.categories);
-    preencher("cfg-cargo", cargos);
-}
-
-function preencher(id, lista) {
-    const select = document.getElementById(id);
-    if (!select) return;
-
-    select.innerHTML = `<option value="">Selecione...</option>`;
-
-    lista.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item.id;
-        opt.textContent = item.name;
-        select.appendChild(opt);
-    });
-}
-
-async function salvarConfig() {
-  if (!activeGuild) return;
-
-  const payload = {
-    painel:    getVal('cfg-painel'),
-    aceitos:   getVal('cfg-aceitos'),
-    recusados: getVal('cfg-recusados'),
-    categoria: getVal('cfg-categoria'),
-    cargo:     getVal('cfg-cargo'),
-    tag:       getVal('cfg-tag'),
-    cooldown:  getVal('cfg-cooldown'),
-    max_tentativas: getVal('cfg-max-tentativas'),
-    antiflood: getVal('cfg-antiflood'),
-    idade_min: getVal('cfg-idade'),
-  };
-
-  try {
-    const res = await fetch(`/api/config/${activeGuild.id}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const out = await res.json();
-    if (out.status === 'ok') {
-      showToast('💾 Configurações salvas e aplicadas ao bot!', 'green');
+  if (srvNavIcon) {
+    if (guild.icon) {
+      srvNavIcon.innerHTML = `<img src="https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;">`;
     } else {
-      showToast('❌ Erro ao salvar configurações.', 'red');
+      srvNavIcon.textContent = "🔥";
     }
-  } catch(e) {
-    showToast('❌ Erro de conexão com o servidor.', 'red');
   }
+
+  if (topServerName) topServerName.textContent = guild.name;
+  if (topServerChip) topServerChip.style.display = "flex";
+  if (overviewServerName) overviewServerName.textContent = guild.name;
+  if (actServerName) actServerName.textContent = guild.name;
+
+  document.getElementById("userNav").style.display = "none";
+  document.getElementById("serverNav").style.display = "block";
+  document.getElementById("userPages").style.display = "none";
+  document.getElementById("serverPages").style.display = "block";
+
+  showServerPage("configwl");
+
+  await carregarConfigDiscord(guild.id);
 }
 
 // ============================================================
-// ADICIONAR BOT
+// CONFIG DO SERVIDOR
 // ============================================================
-function abrirAddBot(name, guildId) {
-  document.getElementById('addBotServerName').textContent = `Servidor: ${name}\n\nVocê será redirecionado ao Discord para autorizar o Fenixx.`;
-  openModal('addBotModal');
-  // guarda guild para pré-selecionar no Discord
-  window._addBotGuildId = guildId;
-}
+function preencherSelect(id, items, prefix = "") {
+  const select = document.getElementById(id);
+  if (!select) return;
 
-function redirecionarAddBot() {
-  const guildParam = window._addBotGuildId ? `&guild_id=${window._addBotGuildId}` : '';
-  window.open(ADD_BOT_URL + guildParam, '_blank');
-  closeModal('addBotModal');
-  showToast('🔗 Abrindo Discord para autorização...', 'green');
-}
+  select.innerHTML = `<option value="">Selecione...</option>`;
 
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
-function showUserPage(id) {
-  userPageIds.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
-  document.getElementById('page-'+id)?.classList.add('active');
-
-  document.querySelectorAll('#userNav .nav-link').forEach(l => {
-    l.classList.toggle('active', l.getAttribute('onclick')?.includes("'"+id+"'"));
+  (items || []).forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = `${prefix}${item.name}`;
+    select.appendChild(option);
   });
-
-  document.getElementById('pageTitle').textContent = pageTitles[id] || id;
-  document.getElementById('notifPanel').classList.remove('show');
-
-  if (id === 'servidores') renderServerList();
-}
-
-function showServerPage(id) {
-  serverPageIds.forEach(p => document.getElementById('page-'+p)?.classList.remove('active'));
-  document.getElementById('page-'+id)?.classList.add('active');
-
-  document.querySelectorAll('#serverNav .nav-link').forEach(l => {
-    l.classList.toggle('active', l.getAttribute('onclick')?.includes("'"+id+"'"));
-  });
-
-  const serverTitle = activeGuild ? activeGuild.name + ' — ' : '';
-  document.getElementById('pageTitle').textContent = serverTitle + (pageTitles[id] || id);
-  document.getElementById('notifPanel').classList.remove('show');
-}
-
-// ============================================================
-// WL TABS
-// ============================================================
-function showWLTab(tab, el) {
-  ['aprovados','pendentes','reprovados'].forEach(t => {
-    const el2 = document.getElementById('wl-'+t);
-    if (el2) el2.style.display = t === tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('.wl-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-// ============================================================
-// APROVAÇÃO / REPROVAÇÃO
-// ============================================================
-function quickApprove(rowId, name) {
-  currentApproveRow = rowId;
-  document.getElementById('approveModalName').value = name;
-  document.getElementById('approveModalChar').value = '';
-  const cargo = getVal('cfg-cargo') || '@Whitelist';
-  document.getElementById('approveModalCargo').value = cargo;
-  updateApprovePreview();
-  openModal('approveModal');
-}
-
-function quickReject(rowId, name) {
-  currentApproveRow = rowId;
-  document.getElementById('rejectModalName').value = name;
-  openModal('rejectModal');
-}
-
-function updateApprovePreview() {
-  const name = document.getElementById('approveModalName').value;
-  const char = document.getElementById('approveModalChar').value || 'NomePersonagem';
-  document.getElementById('approveNamePreview').innerHTML =
-    `${escHtml(name)} | <span style="color:var(--fire-1)">${escHtml(char)}</span>`;
-}
-
-function confirmApprove() {
-  const name = document.getElementById('approveModalName').value;
-  const char = document.getElementById('approveModalChar').value || '—';
-  closeModal('approveModal');
-  showToast(`✅ ${name} aprovado! Discord: ${name} | ${char}`, 'green');
-}
-
-function confirmReject() {
-  const name  = document.getElementById('rejectModalName').value;
-  const motivo = document.getElementById('rejectReason').value;
-  closeModal('rejectModal');
-  showToast(`❌ ${name} reprovado — ${motivo}`, 'red');
-}
-
-// ============================================================
-// TAG PREVIEW
-// ============================================================
-function updateTagPreview(val) {
-  const el = document.getElementById('tagPreview');
-  if (el) el.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${escHtml(val || 'Personagem')}</span>`;
-}
-
-// ============================================================
-// HELPERS
-// ============================================================
-function setVal(id, val) {
-  const el = document.getElementById(id);
-  if (el && val !== undefined && val !== null) el.value = val;
-}
-function getVal(id) {
-  const el = document.getElementById(id);
-  return el ? el.value : '';
-}
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function getInitials(name) {
-  return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() || '??';
-}
-
-function openModal(id)  { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function toggleNotif()  { document.getElementById('notifPanel').classList.toggle('show'); }
-function setFilter(btn) {
-  btn.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
-  btn.classList.add('active-filter');
-}
-
-function showToast(msg, color) {
-  const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card);border:1px solid ${color==='green'?'rgba(0,229,122,0.35)':'rgba(255,68,102,0.35)'};border-radius:12px;padding:13px 18px;font-size:13px;font-weight:600;color:${color==='green'?'var(--green)':'var(--red)'};box-shadow:0 8px 28px rgba(0,0,0,0.45);animation:toastIn .25s ease;max-width:360px;line-height:1.4;`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3800);
-}
-
-// Fecha modal ao clicar fora
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('show'); });
-});
-document.addEventListener('click', e => {
-  const p = document.getElementById('notifPanel');
-  if (!p.contains(e.target) && !e.target.closest('.icon-btn')) p.classList.remove('show');
-});
-
-// ============================================================
-// START
-// ============================================================
-init();
-showUserPage('home');
-</script>
-<script>
-let guildSelecionada = null;
-
-function preencherSelect(id, lista) {
-    const select = document.getElementById(id);
-    if (!select) return;
-
-    select.innerHTML = `<option value="">Selecione...</option>`;
-
-    lista.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        select.appendChild(option);
-    });
-}
-
-async function carregarCanaisECargos(guildId) {
-    try {
-        const canaisRes = await fetch(`/api/guild/${guildId}/channels`);
-        const canaisData = await canaisRes.json();
-
-        const cargosRes = await fetch(`/api/guild/${guildId}/roles`);
-        const cargosData = await cargosRes.json();
-
-        console.log("CANAIS:", canaisData);
-        console.log("CARGOS:", cargosData);
-
-        preencherSelect("cfg-painel", canaisData.text_channels || []);
-        preencherSelect("cfg-aceitos", canaisData.text_channels || []);
-        preencherSelect("cfg-recusados", canaisData.text_channels || []);
-        preencherSelect("cfg-categoria", canaisData.categories || []);
-        preencherSelect("cfg-cargo", cargosData || []);
-    } catch (err) {
-        console.error("Erro ao carregar canais/cargos:", err);
-    }
-}
-
-async function carregarConfig(guildId) {
-    try {
-        const res = await fetch(`/api/config/${guildId}`);
-        const data = await res.json();
-
-        if (data.painel) document.getElementById("cfg-painel").value = data.painel;
-        if (data.aceitos) document.getElementById("cfg-aceitos").value = data.aceitos;
-        if (data.recusados) document.getElementById("cfg-recusados").value = data.recusados;
-        if (data.categoria) document.getElementById("cfg-categoria").value = data.categoria;
-        if (data.cargo) document.getElementById("cfg-cargo").value = data.cargo;
-        if (data.tag) {
-            document.getElementById("cfg-tag").value = data.tag;
-            updateTagPreview(data.tag);
-        }
-    } catch (err) {
-        console.error("Erro ao carregar config:", err);
-    }
-}
-
-async function salvarConfig() {
-    if (!guildSelecionada) {
-        alert("Selecione um servidor primeiro.");
-        return;
-    }
-
-    const payload = {
-        painel: document.getElementById("cfg-painel").value,
-        aceitos: document.getElementById("cfg-aceitos").value,
-        recusados: document.getElementById("cfg-recusados").value,
-        categoria: document.getElementById("cfg-categoria").value,
-        cargo: document.getElementById("cfg-cargo").value,
-        tag: document.getElementById("cfg-tag").value
-    };
-
-    const res = await fetch(`/api/config/${guildSelecionada}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
-
-    const out = await res.json();
-
-    if (out.status === "ok") {
-        alert("Configuração salva com sucesso.");
-    } else {
-        alert("Erro ao salvar configuração.");
-    }
-}
-
-function updateTagPreview(valor) {
-    const preview = document.getElementById("tagPreview");
-    if (!preview) return;
-
-    preview.innerHTML = `DiscordUser | <span style="color:var(--fire-1)">${valor || "NomePersonagem"}</span>`;
-}
-</script>
-<script>
-async function preencherSelect(id, items) {
-    const select = document.getElementById(id);
-    if (!select) return;
-
-    select.innerHTML = '<option value="">Selecione...</option>';
-
-    items.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        select.appendChild(option);
-    });
 }
 
 async function carregarConfigDiscord(guildId) {
+  try {
+    console.log("Carregando config do servidor:", guildId);
+
     const canaisRes = await fetch(`/api/guild/${guildId}/channels`);
     const canais = await canaisRes.json();
 
     const cargosRes = await fetch(`/api/guild/${guildId}/roles`);
     const cargos = await cargosRes.json();
 
-    console.log("channels:", canais);
-    console.log("roles:", cargos);
+    console.log("CANAIS:", canais);
+    console.log("CARGOS:", cargos);
 
-    if (canais.text_channels) {
-        preencherSelect("cfg-painel", canais.text_channels);
-        preencherSelect("cfg-aceitos", canais.text_channels);
-        preencherSelect("cfg-recusados", canais.text_channels);
-    }
+    preencherSelect("cfg-painel", canais.text_channels || [], "#");
+    preencherSelect("cfg-aceitos", canais.text_channels || [], "#");
+    preencherSelect("cfg-recusados", canais.text_channels || [], "#");
+    preencherSelect("cfg-categoria", canais.categories || [], "");
+    preencherSelect("cfg-cargo", Array.isArray(cargos) ? cargos : [], "@");
 
-    if (canais.categories) {
-        preencherSelect("cfg-categoria", canais.categories);
-    }
-
-    if (Array.isArray(cargos)) {
-        preencherSelect("cfg-cargo", cargos);
-    }
-}
-</script>
-<script>
-async function carregarConfigGuild(guildId) {
-  try {
-    // 🔥 Buscar canais + categorias
-    const res = await fetch(`/api/guild/${guildId}/channels`);
-    const data = await res.json();
-
-    const canais = data.text_channels || [];
-    const categorias = data.categories || [];
-
-    // 🔥 Buscar cargos
-    const rolesRes = await fetch(`/api/guild/${guildId}/roles`);
-    const roles = await rolesRes.json();
-
-    // =========================
-    // LIMPAR SELECTS
-    // =========================
-    const painel = document.getElementById("cfg-painel");
-    const aceitos = document.getElementById("cfg-aceitos");
-    const recusados = document.getElementById("cfg-recusados");
-    const categoria = document.getElementById("cfg-categoria");
-    const cargo = document.getElementById("cfg-cargo");
-
-    painel.innerHTML = `<option value="">Selecione...</option>`;
-    aceitos.innerHTML = `<option value="">Selecione...</option>`;
-    recusados.innerHTML = `<option value="">Selecione...</option>`;
-    categoria.innerHTML = `<option value="">Selecione...</option>`;
-    cargo.innerHTML = `<option value="">Selecione...</option>`;
-
-    // =========================
-    // CANAIS
-    // =========================
-    canais.forEach(c => {
-      const opt1 = new Option("#" + c.name, c.id);
-      const opt2 = new Option("#" + c.name, c.id);
-      const opt3 = new Option("#" + c.name, c.id);
-
-      painel.appendChild(opt1);
-      aceitos.appendChild(opt2);
-      recusados.appendChild(opt3);
-    });
-
-    // =========================
-    // CATEGORIAS
-    // =========================
-    categorias.forEach(cat => {
-      categoria.appendChild(new Option(cat.name, cat.id));
-    });
-
-    // =========================
-    // CARGOS
-    // =========================
-    roles.forEach(r => {
-      cargo.appendChild(new Option(r.name, r.id));
-    });
-
+    await carregarConfigSalva(guildId);
   } catch (err) {
-    console.error("Erro ao carregar config:", err);
+    console.error("Erro ao carregar canais/cargos:", err);
+    showToast("❌ Erro ao carregar canais e cargos do servidor.", "red");
   }
 }
+
+async function carregarConfigSalva(guildId) {
+  try {
+    const res = await fetch(`/api/config/${guildId}`);
+    const data = await res.json();
+
+    setVal("cfg-painel", data.painel);
+    setVal("cfg-aceitos", data.aceitos);
+    setVal("cfg-recusados", data.recusados);
+    setVal("cfg-categoria", data.categoria);
+    setVal("cfg-cargo", data.cargo);
+    setVal("cfg-tag", data.tag);
+
+    if (data.tag) updateTagPreview(data.tag);
+  } catch (err) {
+    console.error("Erro ao carregar config salva:", err);
+  }
+}
+
+async function salvarConfig() {
+  if (!activeGuild) {
+    showToast("❌ Nenhum servidor selecionado.", "red");
+    return;
+  }
+
+  const payload = {
+    painel: getVal("cfg-painel"),
+    aceitos: getVal("cfg-aceitos"),
+    recusados: getVal("cfg-recusados"),
+    categoria: getVal("cfg-categoria"),
+    cargo: getVal("cfg-cargo"),
+    tag: getVal("cfg-tag")
+  };
+
+  try {
+    const res = await fetch(`/api/config/${activeGuild.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const out = await res.json();
+
+    if (out.status === "ok") {
+      showToast("💾 Configurações salvas com sucesso!", "green");
+    } else {
+      showToast("❌ Erro ao salvar configurações.", "red");
+    }
+  } catch (e) {
+    console.error(e);
+    showToast("❌ Erro de conexão com o servidor.", "red");
+  }
+}
+
+// ============================================================
+// BOT / MODAIS
+// ============================================================
+function abrirAddBot(name, guildId) {
+  const el = document.getElementById("addBotServerName");
+  if (el) {
+    el.textContent = `Servidor: ${name}\n\nVocê será redirecionado ao Discord para autorizar o Fenixx.`;
+  }
+
+  window._addBotGuildId = guildId;
+  openModal("addBotModal");
+}
+
+function redirecionarAddBot() {
+  const guildParam = window._addBotGuildId ? `&guild_id=${window._addBotGuildId}` : "";
+  window.open(ADD_BOT_URL + guildParam, "_blank");
+  closeModal("addBotModal");
+  showToast("🔗 Abrindo Discord para autorização...", "green");
+}
+
+function quickApprove(rowId, name) {
+  currentApproveRow = rowId;
+  setVal("approveModalName", name);
+  setVal("approveModalChar", "");
+  setVal("approveModalCargo", getVal("cfg-cargo") || "@Whitelist");
+  updateApprovePreview();
+  openModal("approveModal");
+}
+
+function quickReject(rowId, name) {
+  currentApproveRow = rowId;
+  setVal("rejectModalName", name);
+  openModal("rejectModal");
+}
+
+function confirmApprove() {
+  const name = getVal("approveModalName");
+  const char = getVal("approveModalChar") || "—";
+  closeModal("approveModal");
+  showToast(`✅ ${name} aprovado! Discord: ${name} | ${char}`, "green");
+}
+
+function confirmReject() {
+  const name = getVal("rejectModalName");
+  const motivo = getVal("rejectReason");
+  closeModal("rejectModal");
+  showToast(`❌ ${name} reprovado — ${motivo}`, "red");
+}
+
+// ============================================================
+// OUTROS
+// ============================================================
+function showWLTab(tab, el) {
+  ["aprovados", "pendentes", "reprovados"].forEach(t => {
+    const node = document.getElementById("wl-" + t);
+    if (node) node.style.display = t === tab ? "block" : "none";
+  });
+
+  document.querySelectorAll(".wl-tab").forEach(t => t.classList.remove("active"));
+  el?.classList.add("active");
+}
+
+function setFilter(btn) {
+  btn.closest(".filter-bar")?.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active-filter"));
+  btn.classList.add("active-filter");
+}
+
+// ============================================================
+// EVENTOS GERAIS
+// ============================================================
+document.querySelectorAll(".modal-overlay").forEach(overlay => {
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.classList.remove("show");
+    }
+  });
+});
+
+document.addEventListener("click", e => {
+  const panel = document.getElementById("notifPanel");
+  if (panel && !panel.contains(e.target) && !e.target.closest(".icon-btn")) {
+    panel.classList.remove("show");
+  }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await init();
+  showUserPage("home");
+});
 </script>
 </body>
 </html>
