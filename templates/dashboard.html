@@ -1113,16 +1113,23 @@ async function salvarConfig() {
       body: JSON.stringify(payload)
     });
 
-    const out = await res.json();
+    const text = await res.text();
+    console.log("SAVE STATUS:", res.status);
+    console.log("SAVE BODY:", text);
 
-    if (out.status === "ok") {
+    let out = {};
+    try {
+      out = JSON.parse(text);
+    } catch (_) {}
+
+    if (res.ok && out.status === "ok") {
       showToast("💾 Configurações salvas com sucesso!", "green");
     } else {
-      showToast("❌ Erro ao salvar configurações.", "red");
+      showToast(`❌ Erro ao salvar: ${text}`, "red");
     }
   } catch (e) {
-    console.error(e);
-    showToast("❌ Erro de conexão com o servidor.", "red");
+    console.error("SAVE ERROR:", e);
+    showToast(`❌ Falha real: ${e.message}`, "red");
   }
 }
 
