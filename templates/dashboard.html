@@ -526,41 +526,53 @@ select.form-input option{background:var(--dark-3);}
         </div>
       </div>
 
-      <!-- CONFIG WL -->
+       <!-- CONFIG WL -->
       <div class="page-section" id="page-configwl">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
           <div class="back-btn" onclick="voltarPainel()">◀ Voltar</div>
-          <div style="flex:1;"></div>
-          <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar ao Bot</button>
+          <div style="flex:1"></div>
+          <button class="btn-add" onclick="salvarConfig()">💾 Salvar e Aplicar</button>
         </div>
-
-        <div style="background:linear-gradient(135deg,rgba(255,107,0,0.08),rgba(255,69,0,0.03));border:1px solid rgba(255,107,0,0.2);border-radius:13px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:26px;">⚙️</div>
+ 
+        <div style="background:linear-gradient(135deg,rgba(255,107,0,0.09),rgba(255,69,0,0.04));border:1px solid rgba(255,107,0,0.22);border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;">
+          <div style="font-size:28px;">⚙️</div>
           <div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:3px;">Configuração via <span style="color:var(--fire-1)">/config_wl</span> ou pelo painel</div>
-            <div style="font-size:12px;color:var(--text-dim);">As alterações salvas aqui são enviadas ao bot e aplicadas imediatamente no servidor Discord.</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;">Configuração via Discord — <span style="color:var(--fire-1)">/config_wl</span></div>
+            <div style="font-size:12.5px;color:var(--text-dim);">Use <code style="background:var(--dark-3);padding:1px 5px;border-radius:4px;color:var(--fire-3);font-family:'JetBrains Mono',monospace">/config_wl</code> no Discord ou configure tudo aqui. As alterações são aplicadas automaticamente ao bot.</div>
           </div>
         </div>
-
+ 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
-          <div class="card" style="margin-bottom:0;">
-            <div class="card-header"><div class="card-title">📢 Canais do Servidor</div><span style="font-size:10px;color:var(--text-dim);letter-spacing:1px;">DISCORD</span></div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📢 Canais do Servidor</div></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Canal do Painel de Liberação</label><input class="form-input" type="text" id="cfg-painel" placeholder="Ex: liberacao"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Nome do canal onde o painel será fixado.</div></div>
-              <div class="form-group"><label class="form-label">Canal de Aprovados</label><input class="form-input" type="text" id="cfg-aceitos" placeholder="Ex: wl-aprovados"></div>
-              <div class="form-group" style="margin-bottom:0;"><label class="form-label">Canal de Reprovados</label><input class="form-input" type="text" id="cfg-recusados" placeholder="Ex: wl-reprovados"></div>
+              <div class="form-group"><label class="form-label">Canal do Painel de Liberação</label>
+                <select class="form-input" id="cfg-painel"><option>#liberacao</option><option>#whitelist</option><option>#candidaturas</option></select>
+                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">O bot fixa o painel de liberação neste canal.</div>
+              </div>
+              <div class="form-group"><label class="form-label">Canal de Aprovados</label>
+                <select class="form-input" id="cfg-aceitos"><option>#wl-aprovados</option><option>#aprovados</option><option>#liberados</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Canal de Reprovados</label>
+                <select class="form-input" id="cfg-recusados"><option>#wl-reprovados</option><option>#reprovados</option><option>#negados</option></select>
+              </div>
             </div>
           </div>
-          <div class="card" style="margin-bottom:0;">
-            <div class="card-header"><div class="card-title">🗂️ Categoria & Cargo</div><span style="font-size:10px;color:var(--text-dim);letter-spacing:1px;">DISCORD</span></div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🗂️ Categoria & Cargos</div></div>
             <div class="card-body">
-              <div class="form-group"><label class="form-label">Categoria dos Tickets</label><input class="form-input" type="text" id="cfg-categoria" placeholder="Ex: LIBERAÇÕES"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura abre um ticket aqui.</div></div>
-              <div class="form-group"><label class="form-label">Cargo Concedido na Aprovação</label><input class="form-input" type="text" id="cfg-cargo" placeholder="Ex: Whitelist"><div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Nome exato do cargo no servidor.</div></div>
-              <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tag / Apelido no Discord</label>
+              <div class="form-group"><label class="form-label">Categoria dos Tickets</label>
+                <select class="form-input" id="cfg-categoria"><option>LIBERAÇÕES</option><option>WHITELIST</option><option>CANDIDATURAS</option></select>
+                <div style="font-size:11px;color:var(--text-dim);margin-top:5px;">Cada candidatura vira um ticket nesta categoria.</div>
+              </div>
+              <div class="form-group"><label class="form-label">Cargo Concedido na Aprovação</label>
+                <select class="form-input" id="cfg-cargo"><option>@Whitelist</option><option>@Liberado</option><option>@Membro</option><option>@Jogador</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Tag / Apelido no Discord</label>
                 <input class="form-input" type="text" id="cfg-tag" placeholder="Ex: NomePersonagem" oninput="updateTagPreview(this.value)">
                 <div style="margin-top:9px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px;">
-                  <div style="font-size:9px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Preview</div>
-                  <div style="font-size:13px;font-weight:700;color:#fff;" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">Personagem</span></div>
+                  <div style="font-size:9.5px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Preview</div>
+                  <div style="font-size:13.5px;font-weight:700;color:#fff" id="tagPreview">DiscordUser | <span style="color:var(--fire-1)">NomePersonagem</span></div>
                 </div>
               </div>
             </div>
