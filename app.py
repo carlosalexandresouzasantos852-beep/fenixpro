@@ -6,16 +6,17 @@ import json
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "fenixx_secret")
 
-CLIENT_ID     = "1494377772661870622"
+CLIENT_ID = "1494377772661870622"
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
-BOT_TOKEN     = os.getenv("DISCORD_BOT_TOKEN")        # ← NOVO: token do bot
-REDIRECT_URI  = "https://fenixpro-production.up.railway.app/callback"
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+REDIRECT_URI = "https://fenixpro-production.up.railway.app/callback"
 
 if not CLIENT_SECRET:
     raise RuntimeError("DISCORD_CLIENT_SECRET não encontrado nas variáveis do Railway")
 
-API_BASE    = "https://discord.com/api"
+API_BASE = "https://discord.com/api"
 CONFIG_FILE = "config.json"
+
 
 # =========================
 # UTILS
@@ -27,9 +28,15 @@ def load_json(file):
     with open(file, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def save_json(file, data):
     with open(file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def bot_headers():
+    return {"Authorization": f"Bot {BOT_TOKEN}"}
+
 
 # =========================
 # ROTAS WEB
@@ -80,14 +87,16 @@ def callback():
     token_response = requests.post(
         f"{API_BASE}/oauth2/token",
         data={
-            "client_id":     CLIENT_ID,
+            "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
-            "grant_type":    "authorization_code",
-            "code":          code,
-            "redirect_uri":  REDIRECT_URI,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT_URI,
         },
-        headers={"Content-Type": "application/x-www-form-urlencoded"}
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        timeout=15,
     )
+
     token = token_response.json()
     access_token = token.get("access_token")
 
@@ -97,12 +106,13 @@ def callback():
     user = requests.get(
         f"{API_BASE}/users/@me",
         headers={"Authorization": f"Bearer {access_token}"},
+        timeout=15,
     ).json()
 
     session["user"] = {
-        "id":          user.get("id"),
-        "username":    user.get("username"),
-        "avatar":      user.get("avatar"),
+        "id": user.get("id"),
+        "username": user.get("username"),
+        "avatar": user.get("avatar"),
         "global_name": user.get("global_name"),
     }
     session["token"] = access_token
@@ -138,22 +148,22 @@ def api_guilds():
     guilds = requests.get(
         f"{API_BASE}/users/@me/guilds",
         headers={"Authorization": f"Bearer {access_token}"},
+        timeout=15,
     ).json()
 
     if not isinstance(guilds, list):
         return jsonify([])
 
-    # Filtra só owner / admin (ADMINISTRATOR) / MANAGE_GUILD
     guilds_filtradas = []
     for guild in guilds:
         permissions = int(guild.get("permissions", 0))
-        is_owner    = guild.get("owner", False)
-        is_admin    = (permissions & 0x8) == 0x8
-        can_manage  = (permissions & 0x20) == 0x20
+        is_owner = guild.get("owner", False)
+        is_admin = (permissions & 0x8) == 0x8
+        can_manage = (permissions & 0x20) == 0x20
 
         if is_owner or is_admin or can_manage:
             guilds_filtradas.append({
-                "id":   guild["id"],
+                "id": guild["id"],
                 "name": guild["name"],
                 "icon": guild.get("icon"),
                 "owner": is_owner,
@@ -164,9 +174,6 @@ def api_guilds():
 
 # =========================
 # API — GUILDS ONDE O BOT ESTÁ
-# Retorna lista de IDs dos servidores onde o bot foi adicionado.
-# O frontend compara com a lista do usuário para mostrar
-# "Gerenciar" ou "Adicionar".
 # =========================
 
 @app.route("/api/bot/guilds")
@@ -175,13 +182,12 @@ def api_bot_guilds():
         return jsonify([])
 
     if not BOT_TOKEN:
-        # Token não configurado: retorna lista vazia
-        # O frontend mostrará "Adicionar" em todos os servidores
         return jsonify([])
 
     resp = requests.get(
         f"{API_BASE}/users/@me/guilds",
-        headers={"Authorization": f"Bot {BOT_TOKEN}"},
+        headers=bot_headers(),
+        timeout=15,
     )
 
     if resp.status_code != 200:
@@ -192,7 +198,6 @@ def api_bot_guilds():
     if not isinstance(bot_guilds, list):
         return jsonify([])
 
-    # Retorna só os IDs (o frontend usa Set para lookup rápido)
     return jsonify([g["id"] for g in bot_guilds])
 
 
@@ -218,23 +223,27 @@ def save_config(guild_id):
 
     return jsonify({"status": "ok"})
 
+
+# =========================
+# API — CANAIS / CATEGORIAS DO SERVIDOR
+# =========================
+
 @app.route("/api/guild/<guild_id>/channels")
 def api_guild_channels(guild_id):
     if "user" not in session:
         return jsonify({"error": "Não autenticado"}), 401
 
     if not BOT_TOKEN:
-        return jsonify({"error": "BOT_TOKEN não configurado"}), 500
+        return jsonify({"error": "DISCORD_BOT_TOKEN não configurado"}), 500
 
     resp = requests.get(
         f"{API_BASE}/guilds/{guild_id}/channels",
-        headers={
-            "Authorization": f"Bot {BOT_TOKEN}"
-        }
+        headers=bot_headers(),
+        timeout=15,
     )
 
     if resp.status_code != 200:
-        return jsonify({"error": resp.json()}), resp.status_code
+        return jsonify({"error": resp.text}), resp.status_code
 
     channels = resp.json()
 
@@ -247,73 +256,6 @@ def api_guild_channels(guild_id):
                 "id": ch["id"],
                 "name": ch["name"]
             })
-
-        elif ch["type"] == 4:  # categoria
-            categories.append({
-                "id": ch["id"],
-                "name": ch["name"]
-            })
-
-    return jsonify({
-        "text_channels": text_channels,
-        "categories": categories
-    })
-
-@app.route("/api/guild/<guild_id>/roles")
-def api_guild_roles(guild_id):
-    if "user" not in session:
-        return jsonify({"error": "Não autenticado"}), 401
-
-    if not BOT_TOKEN:
-        return jsonify({"error": "BOT_TOKEN não configurado"}), 500
-
-    resp = requests.get(
-        f"{API_BASE}/guilds/{guild_id}/roles",
-        headers={
-            "Authorization": f"Bot {BOT_TOKEN}"
-        }
-    )
-
-    if resp.status_code != 200:
-        return jsonify({"error": resp.json()}), resp.status_code
-
-    roles = resp.json()
-
-    roles_formatados = [
-        {"id": r["id"], "name": r["name"]}
-        for r in roles
-        if r["name"] != "@everyone"
-    ]
-
-    return jsonify(roles_formatados)
-
-@app.route("/api/guild/<guild_id>/channels")
-def api_guild_channels(guild_id):
-    if "user" not in session:
-        return jsonify({"error": "Não autenticado"}), 401
-
-    if not BOT_TOKEN:
-        return jsonify({"error": "DISCORD_BOT_TOKEN não configurado"}), 500
-
-    resp = requests.get(
-        f"{API_BASE}/guilds/{guild_id}/channels",
-        headers={"Authorization": f"Bot {BOT_TOKEN}"}
-    )
-
-    if resp.status_code != 200:
-        return jsonify({"error": resp.text}), resp.status_code
-
-    channels = resp.json()
-
-    text_channels = []
-    categories = []
-
-    for ch in channels:
-        if ch["type"] == 0:  # canal de texto
-            text_channels.append({
-                "id": ch["id"],
-                "name": ch["name"]
-            })
         elif ch["type"] == 4:  # categoria
             categories.append({
                 "id": ch["id"],
@@ -326,6 +268,10 @@ def api_guild_channels(guild_id):
     })
 
 
+# =========================
+# API — CARGOS DO SERVIDOR
+# =========================
+
 @app.route("/api/guild/<guild_id>/roles")
 def api_guild_roles(guild_id):
     if "user" not in session:
@@ -336,7 +282,8 @@ def api_guild_roles(guild_id):
 
     resp = requests.get(
         f"{API_BASE}/guilds/{guild_id}/roles",
-        headers={"Authorization": f"Bot {BOT_TOKEN}"}
+        headers=bot_headers(),
+        timeout=15,
     )
 
     if resp.status_code != 200:
@@ -351,6 +298,7 @@ def api_guild_roles(guild_id):
     ]
 
     return jsonify(roles_formatados)
+
 
 # =========================
 # RUN
