@@ -1105,7 +1105,8 @@ async function salvarConfig() {
   };
 
   try {
-    const res = await fetch(`/api/config/${activeGuild.id}`, {
+    // 1. salvar config
+    const saveRes = await fetch(`/api/config/${activeGuild.id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1113,23 +1114,34 @@ async function salvarConfig() {
       body: JSON.stringify(payload)
     });
 
-    const text = await res.text();
-    console.log("SAVE STATUS:", res.status);
-    console.log("SAVE BODY:", text);
+    const saveOut = await saveRes.json();
 
-    let out = {};
-    try {
-      out = JSON.parse(text);
-    } catch (_) {}
-
-    if (res.ok && out.status === "ok") {
-      showToast("💾 Configurações salvas com sucesso!", "green");
-    } else {
-      showToast(`❌ Erro ao salvar: ${text}`, "red");
+    if (!saveRes.ok || saveOut.status !== "ok") {
+      showToast(`❌ Erro ao salvar: ${saveOut.msg || "falha desconhecida"}`, "red");
+      return;
     }
+
+    // 2. aplicar painel automaticamente
+    const applyRes = await fetch(`/api/apply-panel/${activeGuild.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({})
+    });
+
+    const applyOut = await applyRes.json();
+
+    if (!applyRes.ok || applyOut.status !== "ok") {
+      showToast(`⚠️ Salvou, mas não aplicou: ${applyOut.msg || "falha desconhecida"}`, "red");
+      return;
+    }
+
+    showToast("✅ Configurações salvas e painel aplicado com sucesso!", "green");
+
   } catch (e) {
-    console.error("SAVE ERROR:", e);
-    showToast(`❌ Falha real: ${e.message}`, "red");
+    console.error("Erro em salvarConfig:", e);
+    showToast(`❌ Erro de conexão: ${e.message}`, "red");
   }
 }
 

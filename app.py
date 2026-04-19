@@ -11,15 +11,15 @@ CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 REDIRECT_URI = "https://fenixpro.vercel.app/callback"
 
-# Se você tiver uma API do bot/backend para salvar config, coloque aqui:
-# Ex.: https://seu-bot-api.onrender.com
+API_BASE = "https://discord.com/api"
+CONFIG_FILE = "config.json"
+
+# API externa do bot/config
 CONFIG_API_BASE = os.getenv("CONFIG_API_BASE", "").rstrip("/")
+CONFIG_API_TOKEN = os.getenv("CONFIG_API_TOKEN", "")
 
 if not CLIENT_SECRET:
     raise RuntimeError("DISCORD_CLIENT_SECRET não encontrado nas variáveis do ambiente")
-
-API_BASE = "https://discord.com/api"
-CONFIG_FILE = "config.json"
 
 
 # =========================
@@ -39,25 +39,27 @@ def save_json(file_path, data):
 
 
 def bot_headers():
-    return {"Authorization": f"Bot {BOT_TOKEN}"}
+    return {
+        "Authorization": f"Bot {BOT_TOKEN}"
+    }
 
 
 def oauth_headers(access_token: str):
-    return {"Authorization": f"Bearer {access_token}"}
+    return {
+        "Authorization": f"Bearer {access_token}"
+    }
 
-
-def user_authenticated():
-    return "user" in session and "token" in session
-
-
-CONFIG_API_BASE = os.getenv("CONFIG_API_BASE", "").rstrip("/")
-CONFIG_API_TOKEN = os.getenv("CONFIG_API_TOKEN", "")
 
 def external_headers():
     return {
         "Authorization": f"Bearer {CONFIG_API_TOKEN}",
         "Content-Type": "application/json"
     }
+
+
+def user_authenticated():
+    return "user" in session and "token" in session
+
 
 def get_external_config(guild_id: str):
     if not CONFIG_API_BASE:
@@ -75,6 +77,7 @@ def get_external_config(guild_id: str):
     except Exception as e:
         return None, str(e)
 
+
 def save_external_config(guild_id: str, data: dict):
     if not CONFIG_API_BASE:
         return None, "CONFIG_API_BASE não configurado"
@@ -85,6 +88,28 @@ def save_external_config(guild_id: str, data: dict):
             headers=external_headers(),
             json=data,
             timeout=15
+        )
+        if resp.status_code == 200:
+            return resp.json(), None
+        return None, f"API externa retornou {resp.status_code}: {resp.text}"
+    except Exception as e:
+        return None, str(e)
+
+
+def apply_external_panel(guild_id: str, gif_url: str = None):
+    if not CONFIG_API_BASE:
+        return None, "CONFIG_API_BASE não configurado"
+
+    payload = {}
+    if gif_url:
+        payload["gif_url"] = gif_url
+
+    try:
+        resp = requests.post(
+            f"{CONFIG_API_BASE}/apply-panel/{guild_id}",
+            headers=external_headers(),
+            json=payload,
+            timeout=20
         )
         if resp.status_code == 200:
             return resp.json(), None
@@ -264,6 +289,25 @@ def api_bot_guilds():
 
 
 # =========================
+# API — APPLY PANEL
+# =========================
+
+@app.route("/api/apply-panel/<guild_id>", methods=["POST"])
+def api_apply_panel(guild_id):
+    if not user_authenticated():
+        return jsonify({"status": "erro", "msg": "Não autenticado"}), 401
+
+    data = request.get_json(silent=True) or {}
+    gif_url = data.get("gif_url")
+
+    result, err = apply_external_panel(guild_id, gif_url)
+    if err is None:
+        return jsonify({"status": "ok", "result": result})
+
+    return jsonify({"status": "erro", "msg": err}), 500
+
+
+# =========================
 # API — CONFIG POR SERVIDOR
 # =========================
 
@@ -272,14 +316,12 @@ def get_config(guild_id):
     if not user_authenticated():
         return jsonify({"error": "Não autenticado"}), 401
 
-    # 1) tenta API externa primeiro
     if CONFIG_API_BASE:
         data, err = get_external_config(guild_id)
         if err is None:
             return jsonify(data if isinstance(data, dict) else {})
         return jsonify({"error": err}), 500
 
-    # 2) fallback local
     config = load_json(CONFIG_FILE)
     return jsonify(config.get(str(guild_id), {}))
 
@@ -293,14 +335,12 @@ def save_config(guild_id):
     if not data:
         return jsonify({"status": "erro", "msg": "Nenhum dado recebido"}), 400
 
-    # 1) recomendado: salvar em API externa do bot/backend
     if CONFIG_API_BASE:
         result, err = save_external_config(guild_id, data)
         if err is None:
             return jsonify({"status": "ok", "mode": "external", "result": result})
         return jsonify({"status": "erro", "msg": err}), 500
 
-    # 2) fallback local (não confiável no Vercel)
     try:
         config = load_json(CONFIG_FILE)
         config[str(guild_id)] = data
