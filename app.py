@@ -326,20 +326,27 @@ def get_config(guild_id):
     return jsonify(config.get(str(guild_id), {}))
 
 
-@app.route("/api/config/<guild_id>", methods=["POST"])
+@app.route("/config/<guild_id>", methods=["POST"])
 def save_config(guild_id):
-    if not user_authenticated():
-        return jsonify({"status": "erro", "msg": "Não autenticado"}), 401
+    print(f"[CONFIG API] POST /config/{guild_id}")
+
+    if not is_authorized(request):
+        print("[CONFIG API] Não autorizado")
+        return jsonify({"status": "erro", "msg": "Não autorizado"}), 401
 
     data = request.get_json(silent=True)
+    print(f"[CONFIG API] DATA: {data}")
+
     if not data:
+        print("[CONFIG API] Nenhum dado recebido")
         return jsonify({"status": "erro", "msg": "Nenhum dado recebido"}), 400
 
-    if CONFIG_API_BASE:
-        result, err = save_external_config(guild_id, data)
-        if err is None:
-            return jsonify({"status": "ok", "mode": "external", "result": result})
-        return jsonify({"status": "erro", "msg": err}), 500
+    config = load_json(CONFIG_FILE)
+    config[str(guild_id)] = data
+    save_json(CONFIG_FILE, config)
+
+    print("[CONFIG API] Config salva com sucesso")
+    return jsonify({"status": "ok"}), 200
 
     try:
         config = load_json(CONFIG_FILE)
