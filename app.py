@@ -69,7 +69,7 @@ def get_external_config(guild_id: str):
         resp = requests.get(
             f"{CONFIG_API_BASE}/config/{guild_id}",
             headers=external_headers(),
-            timeout=15
+            timeout=20
         )
         if resp.status_code == 200:
             return resp.json(), None
@@ -87,7 +87,7 @@ def save_external_config(guild_id: str, data: dict):
             f"{CONFIG_API_BASE}/config/{guild_id}",
             headers=external_headers(),
             json=data,
-            timeout=15
+            timeout=20
         )
         if resp.status_code == 200:
             return resp.json(), None
@@ -109,7 +109,7 @@ def apply_external_panel(guild_id: str, gif_url: str = None):
             f"{CONFIG_API_BASE}/apply-panel/{guild_id}",
             headers=external_headers(),
             json=payload,
-            timeout=20
+            timeout=30
         )
         if resp.status_code == 200:
             return resp.json(), None
@@ -174,7 +174,7 @@ def callback():
             "redirect_uri": REDIRECT_URI,
         },
         headers={"Content-Type": "application/x-www-form-urlencoded"},
-        timeout=15,
+        timeout=20,
     )
 
     token = token_response.json()
@@ -186,7 +186,7 @@ def callback():
     user_response = requests.get(
         f"{API_BASE}/users/@me",
         headers=oauth_headers(access_token),
-        timeout=15,
+        timeout=20,
     )
     user = user_response.json()
 
@@ -230,7 +230,7 @@ def api_guilds():
         guilds = requests.get(
             f"{API_BASE}/users/@me/guilds",
             headers=oauth_headers(access_token),
-            timeout=15,
+            timeout=20,
         ).json()
     except Exception:
         return jsonify([])
@@ -272,7 +272,7 @@ def api_bot_guilds():
         resp = requests.get(
             f"{API_BASE}/users/@me/guilds",
             headers=bot_headers(),
-            timeout=15,
+            timeout=20,
         )
     except Exception:
         return jsonify([])
@@ -311,42 +311,32 @@ def api_apply_panel(guild_id):
 # API — CONFIG POR SERVIDOR
 # =========================
 
-@app.route("/api/config/<guild_id>", methods=["GET"])
-def get_config(guild_id):
+@app.route("/api/config/<guild_id>", methods=["GET", "POST"])
+def config_by_guild(guild_id):
     if not user_authenticated():
-        return jsonify({"error": "Não autenticado"}), 401
+        return jsonify({"status": "erro", "msg": "Não autenticado"}), 401
 
-    if CONFIG_API_BASE:
-        data, err = get_external_config(guild_id)
-        if err is None:
-            return jsonify(data if isinstance(data, dict) else {})
-        return jsonify({"error": err}), 500
+    # GET
+    if request.method == "GET":
+        if CONFIG_API_BASE:
+            data, err = get_external_config(guild_id)
+            if err is None:
+                return jsonify(data if isinstance(data, dict) else {})
+            return jsonify({"status": "erro", "msg": err}), 500
 
-    config = load_json(CONFIG_FILE)
-    return jsonify(config.get(str(guild_id), {}))
+        config = load_json(CONFIG_FILE)
+        return jsonify(config.get(str(guild_id), {}))
 
-
-@app.route("/config/<guild_id>", methods=["POST"])
-def save_config(guild_id):
-    print(f"[CONFIG API] POST /config/{guild_id}")
-
-    if not is_authorized(request):
-        print("[CONFIG API] Não autorizado")
-        return jsonify({"status": "erro", "msg": "Não autorizado"}), 401
-
+    # POST
     data = request.get_json(silent=True)
-    print(f"[CONFIG API] DATA: {data}")
-
     if not data:
-        print("[CONFIG API] Nenhum dado recebido")
         return jsonify({"status": "erro", "msg": "Nenhum dado recebido"}), 400
 
-    config = load_json(CONFIG_FILE)
-    config[str(guild_id)] = data
-    save_json(CONFIG_FILE, config)
-
-    print("[CONFIG API] Config salva com sucesso")
-    return jsonify({"status": "ok"}), 200
+    if CONFIG_API_BASE:
+        result, err = save_external_config(guild_id, data)
+        if err is None:
+            return jsonify({"status": "ok", "mode": "external", "result": result})
+        return jsonify({"status": "erro", "msg": err}), 500
 
     try:
         config = load_json(CONFIG_FILE)
@@ -380,7 +370,7 @@ def api_guild_channels(guild_id):
         resp = requests.get(
             f"{API_BASE}/guilds/{guild_id}/channels",
             headers=bot_headers(),
-            timeout=15,
+            timeout=20,
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -427,7 +417,7 @@ def api_guild_roles(guild_id):
         resp = requests.get(
             f"{API_BASE}/guilds/{guild_id}/roles",
             headers=bot_headers(),
-            timeout=15,
+            timeout=20,
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
