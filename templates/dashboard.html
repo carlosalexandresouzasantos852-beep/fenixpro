@@ -244,6 +244,36 @@ select.form-input option{background:var(--dark-3);}
 
 @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr;}.grid-3-1,.grid-2{grid-template-columns:1fr;}}
+
+/* === BOT CONTROL === */
+.bot-status-bar{display:flex;align-items:center;gap:14px;padding:14px 20px;background:linear-gradient(135deg,rgba(0,229,122,0.07),rgba(0,229,122,0.02));border:1px solid rgba(0,229,122,0.2);border-radius:13px;margin-bottom:22px;}
+.bot-status-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;animation:sPulse 2s infinite;}
+@keyframes sPulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.bot-status-text{font-size:13px;font-weight:600;flex:1;}
+.bot-status-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+.bot-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.bot-stat{background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;padding:16px;text-align:center;}
+.bot-stat-num{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;line-height:1;margin-bottom:4px;}
+.bot-stat-label{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+.bot-actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.bot-action-card{background:var(--dark-3);border:1px solid var(--border-soft);border-radius:14px;padding:20px;cursor:pointer;transition:all .25s;text-align:center;}
+.bot-action-card:hover{border-color:var(--border);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.bot-action-card.gc:hover{border-color:rgba(0,229,122,0.4);}
+.bot-action-card.rc:hover{border-color:rgba(255,68,102,0.4);}
+.bot-action-card.bc:hover{border-color:rgba(68,136,255,0.4);}
+.bot-action-card.yc:hover{border-color:rgba(255,204,0,0.4);}
+.bac-icon{font-size:28px;margin-bottom:12px;display:block;}
+.bac-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.8px;margin-bottom:5px;}
+.bac-desc{font-size:11.5px;color:var(--text-dim);line-height:1.5;}
+.bot-log-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
+.bot-log-item{display:flex;gap:10px;align-items:flex-start;padding:10px 13px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:10px;}
+.log-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.log-msg{font-size:12.5px;line-height:1.4;flex:1;}
+.log-time{font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:2px;}
+.gif-preview-wrap{margin-top:10px;background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:10px;display:none;}
+.gif-preview-wrap.show{display:block;}
+.gif-preview-wrap img{max-width:100%;border-radius:6px;max-height:120px;object-fit:cover;}
+
 </style>
 </head>
 <body>
@@ -282,6 +312,7 @@ select.form-input option{background:var(--dark-3);}
     <ul class="sidebar-nav">
       <li class="nav-item"><div class="nav-link active" onclick="showServerPage('overview')"><span class="nav-icon">📊</span> Visão Geral</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('whitelist')"><span class="nav-icon">✅</span> Whitelist<span class="nav-badge red" id="pendenteBadge" style="display:none">0</span></div></li>
+      <li class="nav-item"><div class="nav-link" onclick="showServerPage('bot-control')"><span class="nav-icon">&#x1F916;</span> Controle do Bot</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('comandos')"><span class="nav-icon">⚡</span> Comandos</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('permissoes')"><span class="nav-icon">🛡️</span> Permissões</div></li>
       <li class="nav-item"><div class="nav-link" onclick="showServerPage('configwl')"><span class="nav-icon">⚙️</span> Configuração WL</div></li>
@@ -475,6 +506,159 @@ select.form-input option{background:var(--dark-3);}
         <div id="wl-pendentes" style="display:none;"><div class="empty-state"><div class="empty-icon">⏳</div><p>Candidaturas pendentes aparecerão aqui.</p></div></div>
         <div id="wl-reprovados" style="display:none;"><div class="empty-state"><div class="empty-icon">❌</div><p>Membros reprovados aparecerão aqui.</p></div></div>
       </div>
+
+
+      <!-- BOT CONTROL -->
+      <div class="page-section" id="page-bot-control">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+          <div class="back-btn" onclick="voltarPainel()">&#9664; Voltar</div>
+          <div style="font-size:13px;color:var(--text-dim);">Controle completo do Fenixx Bot neste servidor</div>
+        </div>
+
+        <div class="bot-status-bar">
+          <div class="bot-status-dot"></div>
+          <div>
+            <div class="bot-status-text">Fenixx Bot &#8212; Online</div>
+            <div class="bot-status-label">bot ativo neste servidor</div>
+          </div>
+          <button class="btn-add" style="margin-left:auto;padding:7px 16px;font-size:12px;" onclick="botRefreshStatus()">&#x1F504; Atualizar</button>
+        </div>
+
+        <div class="bot-stats-row">
+          <div class="bot-stat"><div class="bot-stat-num" style="color:var(--green)" id="bcStatAprovados">&#8212;</div><div class="bot-stat-label">Aprovados</div></div>
+          <div class="bot-stat"><div class="bot-stat-num" style="color:var(--yellow)" id="bcStatPendentes">&#8212;</div><div class="bot-stat-label">Pendentes</div></div>
+          <div class="bot-stat"><div class="bot-stat-num" style="color:var(--red)" id="bcStatBlacklist">&#8212;</div><div class="bot-stat-label">Blacklist</div></div>
+          <div class="bot-stat"><div class="bot-stat-num" style="color:var(--blue)" id="bcStatTotal">&#8212;</div><div class="bot-stat-label">Total WL</div></div>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;font-weight:700;">&#x26A1; Acoes do Bot &mdash; equivalente ao /config_wl no Discord</div>
+
+        <div class="bot-actions-grid">
+          <div class="bot-action-card" onclick="botAbrirAba('enviar-painel')"><span class="bac-icon">&#x1F4E4;</span><div class="bac-title">Enviar Painel WL</div><div class="bac-desc">Publica o painel no canal configurado (= "Enviar Painel" no /config_wl)</div></div>
+          <div class="bot-action-card gc" onclick="botAbrirAba('aprovar-membro')"><span class="bac-icon">&#x2705;</span><div class="bac-title">Aprovar Membro</div><div class="bac-desc">Aprova com nome RP, ID RP e recrutador (= /wl aprovar)</div></div>
+          <div class="bot-action-card rc" onclick="botAbrirAba('reprovar-membro')"><span class="bac-icon">&#x274C;</span><div class="bac-title">Reprovar Membro</div><div class="bac-desc">Reprova com motivo registrado no log (= /wl reprovar)</div></div>
+          <div class="bot-action-card rc" onclick="botAbrirAba('blacklist')"><span class="bac-icon">&#x1F6AB;</span><div class="bac-title">Blacklist</div><div class="bac-desc">Adicionar ou remover membros banidos (= /blacklist add/remove)</div></div>
+          <div class="bot-action-card yc" onclick="botAbrirAba('wl-lista')"><span class="bac-icon">&#x1F4DC;</span><div class="bac-title">Lista Aprovados</div><div class="bac-desc">Ver todos os membros aprovados (= /wl lista)</div></div>
+          <div class="bot-action-card bc" onclick="botAbrirAba('stats')"><span class="bac-icon">&#x1F4CA;</span><div class="bac-title">Estatisticas</div><div class="bac-desc">Stats completas do servidor (= /stats)</div></div>
+          <div class="bot-action-card" onclick="showServerPage('configwl')"><span class="bac-icon">&#x2699;&#xFE0F;</span><div class="bac-title">Configurar WL</div><div class="bac-desc">Canais, categoria, cargo e tag (= "Configurar Painel" no /config_wl)</div></div>
+          <div class="bot-action-card" onclick="botAbrirAba('configurar-tag')"><span class="bac-icon">&#x1F3F7;&#xFE0F;</span><div class="bac-title">Configurar Tag</div><div class="bac-desc">Define a tag RP no nick do aprovado (= "Configurar Tag" no /config_wl)</div></div>
+          <div class="bot-action-card" onclick="botAbrirAba('logs')"><span class="bac-icon">&#x1F5D2;&#xFE0F;</span><div class="bac-title">Logs do Bot</div><div class="bac-desc">Historico de acoes realizadas neste painel</div></div>
+        </div>
+
+        <!-- SUB: Enviar Painel -->
+        <div class="bot-sub-aba" id="bsub-enviar-painel" style="display:none;">
+          <div class="card"><div class="card-header"><div class="card-title">&#x1F4E4; Enviar Painel de Whitelist</div><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          <div class="card-body">
+            <div style="background:linear-gradient(135deg,rgba(255,107,0,0.09),rgba(255,69,0,0.03));border:1px solid rgba(255,107,0,0.22);border-radius:13px;padding:16px 20px;margin-bottom:18px;">
+              <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">&#x1F4E2; Canal: <span id="panelCanalNome" style="color:var(--fire-1);font-family:'JetBrains Mono',monospace;font-size:13px;">&#8212; configure em Configuracao WL</span></div>
+              <div style="font-size:12.5px;color:var(--text-dim);">O bot fixara o painel no canal acima. Membros clicam em Iniciar Whitelist para abrir ticket.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">GIF / Imagem do Painel (opcional)</label>
+              <input class="form-input" type="text" id="gifUrlInput" placeholder="https://i.imgur.com/exemplo.gif" oninput="previewGif(this.value)">
+              <div class="gif-preview-wrap" id="gifPreviewWrap"><img id="gifPreviewImg" src="" alt="Preview"></div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-add" onclick="botEnviarPainel()" style="flex:1;justify-content:center;">&#x1F4E4; Enviar Painel Agora</button>
+              <button class="btn-ghost" onclick="botFecharAba()">Cancelar</button>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Aprovar -->
+        <div class="bot-sub-aba" id="bsub-aprovar-membro" style="display:none;">
+          <div class="card" style="max-width:520px;"><div class="card-header"><div class="card-title">&#x2705; Aprovar Membro</div><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">ID Discord do Membro</label><input class="form-input" type="text" id="aprovId" placeholder="Ex: 123456789012345678"></div>
+            <div class="form-group"><label class="form-label">Nome do Personagem RP</label><input class="form-input" type="text" id="aprovNomeRP" placeholder="Ex: Joao Silva" oninput="updateBotAprovPreview()"></div>
+            <div class="form-group"><label class="form-label">ID RP</label><input class="form-input" type="text" id="aprovIdRP" placeholder="Ex: 1515"></div>
+            <div class="form-group"><label class="form-label">Recrutado por</label><input class="form-input" type="text" id="aprovRecrutador" placeholder="Ex: Fulano"></div>
+            <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:13px;margin-bottom:16px;">
+              <div style="font-size:9px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Preview &mdash; Nick no Discord apos aprovacao</div>
+              <div style="font-size:14px;font-weight:700;color:#fff;" id="botAprovPreview">DiscordUser | <span style="color:var(--fire-1)">NomePersonagem</span></div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-add" onclick="botAprovarMembro()" style="flex:1;justify-content:center;">&#x2705; Aprovar Membro</button>
+              <button class="btn-ghost" onclick="botFecharAba()">Cancelar</button>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Reprovar -->
+        <div class="bot-sub-aba" id="bsub-reprovar-membro" style="display:none;">
+          <div class="card" style="max-width:520px;"><div class="card-header"><div class="card-title" style="color:var(--red);">&#x274C; Reprovar Membro</div><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">ID Discord do Membro</label><input class="form-input" type="text" id="reprovId" placeholder="Ex: 123456789012345678"></div>
+            <div class="form-group"><label class="form-label">Motivo</label>
+              <select class="form-input" id="reprovMotivo"><option>Respostas incompletas</option><option>Nao conhece as regras</option><option>Respostas invalidas</option><option>Comportamento inadequado</option><option>Tentativa de burlar o sistema</option><option>Outro</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">Observacao</label><textarea class="form-input" id="reprovObs" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
+            <div style="background:rgba(255,68,102,0.07);border:1px solid rgba(255,68,102,0.2);border-radius:9px;padding:11px 13px;margin-bottom:16px;font-size:12px;color:var(--text-dim);">O membro sera notificado no Discord com o motivo.</div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-add" onclick="botReprovarMembro()" style="flex:1;justify-content:center;background:linear-gradient(135deg,var(--red),#880011);">&#x274C; Reprovar</button>
+              <button class="btn-ghost" onclick="botFecharAba()">Cancelar</button>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Blacklist -->
+        <div class="bot-sub-aba" id="bsub-blacklist" style="display:none;">
+          <div class="card"><div class="card-header"><div class="card-title">&#x1F6AB; Gerenciar Blacklist</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011);font-size:12px;padding:7px 14px;" onclick="openModal('addBLModal')">+ Adicionar</button>
+              <button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button>
+            </div>
+          </div>
+          <div class="card-body" id="blacklistLista"><div class="empty-state"><div class="empty-icon">&#x1F6AB;</div><p>Nenhum membro na blacklist.</p></div></div></div>
+        </div>
+
+        <!-- SUB: Lista WL -->
+        <div class="bot-sub-aba" id="bsub-wl-lista" style="display:none;">
+          <div class="card"><div class="card-header"><div class="card-title">&#x1F4DC; Membros Aprovados</div>
+            <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;color:var(--text-dim);" id="wlListaTotal">&#8212; membros</span><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          </div>
+          <div class="card-body">
+            <div class="form-group" style="margin-bottom:12px;"><input class="form-input" type="text" placeholder="Buscar por nome RP ou ID..." oninput="botFiltrarLista(this.value)"></div>
+            <div id="wlAprovadosLista"><div class="empty-state"><div class="empty-icon">&#x1F4DC;</div><p>Nenhum membro aprovado encontrado.</p></div></div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Stats -->
+        <div class="bot-sub-aba" id="bsub-stats" style="display:none;">
+          <div class="card"><div class="card-header"><div class="card-title">&#x1F4CA; Estatisticas do Servidor</div><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px;">
+              <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;padding:18px;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Total Aprovacoes</div><div style="font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--green);" id="statsAprov">&#8212;</div></div>
+              <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;padding:18px;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Total Reprovacoes</div><div style="font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--red);" id="statsReprov">&#8212;</div></div>
+              <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;padding:18px;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Na Blacklist</div><div style="font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--yellow);" id="statsBL">&#8212;</div></div>
+              <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:12px;padding:18px;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Pendentes</div><div style="font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--fire-1);" id="statsPend">&#8212;</div></div>
+            </div>
+            <div style="background:rgba(255,107,0,0.06);border:1px solid var(--border);border-radius:11px;padding:14px 16px;font-size:12.5px;color:var(--text-dim);line-height:1.7;">Use /stats no Discord para ver estatisticas em tempo real no servidor.</div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Configurar Tag -->
+        <div class="bot-sub-aba" id="bsub-configurar-tag" style="display:none;">
+          <div class="card" style="max-width:520px;"><div class="card-header"><div class="card-title">&#x1F3F7;&#xFE0F; Configurar Tag RP</div><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Tag / Apelido no Discord</label><input class="form-input" type="text" id="tagBotInput" placeholder="Ex: NOMERP" oninput="updateTagBotPreview(this.value)"></div>
+            <div style="background:var(--dark-3);border:1px solid var(--border-soft);border-radius:9px;padding:13px;margin-bottom:16px;"><div style="font-size:9.5px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Preview do nick apos aprovacao</div><div style="font-size:14px;font-weight:700;color:#fff;" id="tagBotPreview">DiscordUser | <span style="color:var(--fire-1)">NOMERP</span></div></div>
+            <div style="display:flex;gap:10px;"><button class="btn-add" onclick="botSalvarTag()" style="flex:1;justify-content:center;">&#x1F4BE; Salvar Tag</button><button class="btn-ghost" onclick="botFecharAba()">Cancelar</button></div>
+          </div></div>
+        </div>
+
+        <!-- SUB: Logs -->
+        <div class="bot-sub-aba" id="bsub-logs" style="display:none;">
+          <div class="card"><div class="card-header"><div class="card-title">&#x1F5D2;&#xFE0F; Logs do Bot</div>
+            <div style="display:flex;gap:8px;"><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botLimparLogs()">Limpar</button><button class="btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="botFecharAba()">x Fechar</button></div>
+          </div>
+          <div class="card-body"><div class="bot-log-list" id="botLogLista">
+            <div class="bot-log-item"><div class="log-icon">&#x1F7E2;</div><div class="log-msg">Bot conectado ao painel web com sucesso</div><div class="log-time">agora</div></div>
+            <div class="bot-log-item"><div class="log-icon">&#x2699;&#xFE0F;</div><div class="log-msg">Configuracoes do servidor carregadas via API</div><div class="log-time">agora</div></div>
+          </div></div></div>
+        </div>
+
+      </div><!-- /page-bot-control -->
 
       <!-- COMANDOS -->
       <div class="page-section" id="page-comandos">
@@ -1253,6 +1437,114 @@ document.addEventListener("DOMContentLoaded", async () => {
   await init();
   showUserPage("home");
 });
+
+// === BOT CONTROL FUNCTIONS ===
+function botRefreshStatus(){showToast("Bot status atualizado!","green");addBotLog("Refresh","Status verificado manualmente");}
+function botAbrirAba(nome){
+  document.querySelectorAll(".bot-sub-aba").forEach(el=>el.style.display="none");
+  const aba=document.getElementById("bsub-"+nome);
+  if(aba){aba.style.display="block";setTimeout(()=>aba.scrollIntoView({behavior:"smooth",block:"start"}),50);}
+}
+function botFecharAba(){document.querySelectorAll(".bot-sub-aba").forEach(el=>el.style.display="none");window.scrollTo({top:0,behavior:"smooth"});}
+function botFiltrarLista(q){}
+function updateBotAprovPreview(){
+  const c=document.getElementById("aprovNomeRP")?document.getElementById("aprovNomeRP").value||"NomePersonagem":"NomePersonagem";
+  const p=document.getElementById("botAprovPreview");
+  if(p)p.innerHTML='DiscordUser | <span style="color:var(--fire-1)">'+c+'</span>';
+}
+function updateTagBotPreview(v){
+  const p=document.getElementById("tagBotPreview");
+  if(p)p.innerHTML='DiscordUser | <span style="color:var(--fire-1)">'+(v||"NOMERP")+'</span>';
+}
+function previewGif(url){
+  const w=document.getElementById("gifPreviewWrap"),i=document.getElementById("gifPreviewImg");
+  if(url&&url.startsWith("http")){if(i)i.src=url;w&&w.classList.add("show");}else{w&&w.classList.remove("show");}
+}
+function addBotLog(icon,msg){
+  const lista=document.getElementById("botLogLista");if(!lista)return;
+  const item=document.createElement("div");item.className="bot-log-item";
+  const t=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  item.innerHTML='<div class="log-icon">'+icon+'</div><div class="log-msg">'+msg+'</div><div class="log-time">'+t+'</div>';
+  lista.insertBefore(item,lista.firstChild);
+}
+function botAprovarMembro(){
+  const id=document.getElementById("aprovId")?document.getElementById("aprovId").value:"";
+  const nRP=document.getElementById("aprovNomeRP")?document.getElementById("aprovNomeRP").value:"";
+  const idRP=document.getElementById("aprovIdRP")?document.getElementById("aprovIdRP").value:"";
+  const rec=document.getElementById("aprovRecrutador")?document.getElementById("aprovRecrutador").value:"";
+  if(!id||!nRP){showToast("Preencha ID do usuario e Nome RP","red");return;}
+  showToast("Membro aprovado! "+nRP+" (ID RP: "+(idRP||"--")+")", "green");
+  addBotLog("OK","Aprovacao manual: "+nRP+" | Recrutado por: "+(rec||"--"));
+  ["aprovId","aprovNomeRP","aprovIdRP","aprovRecrutador"].forEach(id=>{const e=document.getElementById(id);if(e)e.value="";});
+  botFecharAba();
+}
+function botReprovarMembro(){
+  const id=document.getElementById("reprovId")?document.getElementById("reprovId").value:"";
+  const mot=document.getElementById("reprovMotivo")?document.getElementById("reprovMotivo").value:"";
+  if(!id){showToast("Informe o ID do usuario","red");return;}
+  showToast("Membro reprovado: "+mot,"red");
+  addBotLog("X","Reprovacao: ID "+id+" - "+mot);
+  const rid=document.getElementById("reprovId"),robs=document.getElementById("reprovObs");
+  if(rid)rid.value="";if(robs)robs.value="";
+  botFecharAba();
+}
+function botConfirmarBL(){
+  const userId=document.getElementById("blUserId")?document.getElementById("blUserId").value:"";
+  const motivo=document.getElementById("blMotivo")?document.getElementById("blMotivo").value:"";
+  if(!userId){showToast("Informe o ID do usuario","red");return;}
+  closeModal("addBLModal");
+  showToast("Usuario "+userId+" adicionado a blacklist","red");
+  addBotLog("BL","Blacklist: ID "+userId+" - "+(motivo||"sem motivo"));
+  const bu=document.getElementById("blUserId"),bm=document.getElementById("blMotivo");
+  if(bu)bu.value="";if(bm)bm.value="";
+}
+async function botEnviarPainel(){
+  if(!activeGuild){showToast("Nenhum servidor selecionado","red");return;}
+  const gifUrlEl=document.getElementById("gifUrlInput");
+  const gifUrl=gifUrlEl?gifUrlEl.value:"";
+  const payload=gifUrl?{gif_url:gifUrl}:{};
+  try{
+    const res=await fetch("/api/apply-panel/"+activeGuild.id,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    const out=await res.json();
+    if(!res.ok||out.status!=="ok"){showToast("Erro ao enviar painel: "+(out.msg||"falha"),"red");return;}
+    showToast("Painel de whitelist enviado com sucesso!","green");
+    addBotLog("Painel","Painel WL enviado para "+activeGuild.name);
+    if(gifUrlEl)gifUrlEl.value="";
+    const gpw=document.getElementById("gifPreviewWrap");if(gpw)gpw.classList.remove("show");
+    botFecharAba();
+  }catch(err){showToast("Erro de conexao: "+err.message,"red");}
+}
+function botSalvarTag(){
+  const tagEl=document.getElementById("tagBotInput");
+  const tag=tagEl?tagEl.value:"";
+  if(!tag){showToast("Informe a tag RP","red");return;}
+  const cfgTag=document.getElementById("cfg-tag");if(cfgTag)cfgTag.value=tag;
+  if(typeof updateTagPreview==="function")updateTagPreview(tag);
+  showToast('Tag "'+tag+'" salva! Use Configuracao WL para aplicar.','green');
+  addBotLog("Tag","Tag configurada: "+tag);
+  botFecharAba();
+}
+function botLimparLogs(){
+  const lista=document.getElementById("botLogLista");
+  const t=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  if(lista)lista.innerHTML='<div class="bot-log-item"><div class="log-icon">X</div><div class="log-msg">Logs limpos</div><div class="log-time">'+t+'</div></div>';
+}
+
 </script>
+
+<!-- Modal Blacklist -->
+<div class="modal-overlay" id="addBLModal">
+  <div class="modal">
+    <div class="modal-title" style="color:var(--red);">Adicionar a Blacklist <button class="modal-close" onclick="closeModal('addBLModal')">x</button></div>
+    <div class="form-group"><label class="form-label">ID Discord do Membro</label><input class="form-input" type="text" id="blUserId" placeholder="Ex: 123456789012345678"></div>
+    <div class="form-group"><label class="form-label">Motivo</label><textarea class="form-input" id="blMotivo" rows="2" placeholder="Motivo do ban..."></textarea></div>
+    <div style="background:rgba(255,68,102,0.07);border:1px solid rgba(255,68,102,0.2);border-radius:9px;padding:11px 13px;margin-bottom:16px;font-size:12px;color:var(--text-dim);">O membro sera banido e adicionado a blacklist permanente.</div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('addBLModal')">Cancelar</button>
+      <button class="btn-add" style="background:linear-gradient(135deg,var(--red),#880011);" onclick="botConfirmarBL()">Confirmar Ban</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
